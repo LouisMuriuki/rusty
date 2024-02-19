@@ -43,14 +43,14 @@
 //     println!("End count = {count}");
 // }
 
-fn lift_off() {
-    let mut timer = 10;
+// fn lift_off() {
+//     let mut timer = 10;
 
-    while timer > 0 {
-        println!("{}", timer);
-        timer -= 1;
-    }
-}
+//     while timer > 0 {
+//         println!("{}", timer);
+//         timer -= 1;
+//     }
+// }
 
 fn for_loop() {
     for number in (1..4).rev() {
