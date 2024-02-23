@@ -60,6 +60,7 @@ fn first_word_slices(s:&str)->&str{
 fn array_slice(){
     let a=[1,2,3,4,5];
     let slice=&a[1..3];
+    assert_eq!(slice, &[2, 3]); //not sure wht this does
     println!("{slice:?}");
 }
 
