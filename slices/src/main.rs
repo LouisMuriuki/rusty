@@ -46,7 +46,6 @@ fn first_word_legacy_slices(s:&String)->&str{
             return &s[..i]
         }
     }
-
 &s[..]
 }
 
