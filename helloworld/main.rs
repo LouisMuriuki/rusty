@@ -1,21 +1,26 @@
-use std::io;
+// use std::io;
 fn main() {
-    loop {
-        println!("Hello World");
+     let string="9ii";
+     let number:i32=string.trim().parse().expect("ERROR");
 
-        println!("Please guess a number");
+        println!("{}",number);
+    // loop {
+       
+    //     println!("Hello World");
 
-        let mut guess = String::new();
+    //     println!("Please guess a number");
 
-        io::stdin()
-            .read_line(&mut guess).expect("error")
+    //     let mut guess = String::new();
+
+    //     io::stdin()
+    //         .read_line(&mut guess).expect("error");
             
-        let guess=match guess
-            .trim()
-            .parse()
-            {
-                Ok(num)=>num,
-                Err(_)=>continue,
-        };
-    }
+    //     let guess=match guess
+    //         .trim()
+    //         .parse()
+    //         {
+    //             Ok(num)=>num,
+    //             Err(_)=>continue,
+    //     };
+    // }
 }
