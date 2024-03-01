@@ -92,6 +92,9 @@ fn main() {
 
     println!("Can rect1 hold rect2? {}", rect1.can_hold(&rect2));
     println!("Can rect1 hold rect3? {}", rect1.can_hold(&rect3));
+
+    //associated function -check implementation
+    let squareRectnagle = Rectangle::square(4);
 }
 
 // we can also return an instance of a struct from a function
@@ -127,9 +130,17 @@ impl Rectangle {
         //self here is an alias of the type the impl block is for
         self.width * self.height
     }
-}
-impl Rectangle {
+
     fn can_hold(&self, rect: &Rectangle) -> bool {
         self.width * self.height > rect.height * rect.width
+    }
+
+    // associated funct- why? it does not have a self parameter and returns a struct instance
+    fn square(size: u32) -> Self {
+        // Self here is an alias of the type that appears after impl keyword
+        Self {
+            width: size,
+            height: size,
+        }
     }
 }
