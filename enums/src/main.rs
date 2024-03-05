@@ -24,12 +24,12 @@ enum IpAdd {
     V6(String),
 }
 
-// option enum
-#[derive(Debug)]
-enum Option<T>{   //the type oof the enum chnages according value passed in the generic parameter
-    None,   //no value 
-    Some(T) // some value of type T  // can hold one piece of dta of nay type
-}
+//This ussually defined in the std lib 
+// it is so usefull that it is included in the prelude, we can even use the values without the option:: prefix,,check code below
+// enum Option<T>{   //the type oof the enum chnages according value passed in the generic parameter
+//     None,   //no value 
+//     Some(T) // some value of type T  // can hold one piece of dta of nay type
+// }
 
 
 impl Message{

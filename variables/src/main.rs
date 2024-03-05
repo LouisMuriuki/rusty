@@ -1,5 +1,8 @@
 fn main() {
     let x = 5;
+    let mut hello=String::from("Hello");
+    let world=String::from("World");
+    hello.push_str(&world);  // push_str() expects type &str
 
     let x = x + 1; // different from x=6
 

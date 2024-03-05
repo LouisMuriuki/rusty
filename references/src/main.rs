@@ -15,7 +15,7 @@ fn calculate_length(s:&String)->usize{
 }
 
 fn mutable_refences(s:&mut String){
-    s.push_str(",uuuhm I meant world😅");
+    s.push_str(",uuuhm I meant world😅");   // push_str() expects type &str
     println!("{s}")
 }
 
