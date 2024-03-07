@@ -58,6 +58,7 @@ fn if_let(value: Option<i8>) -> Option<i8> {
     let config_max = Some(3u8);
     if let some(max) = config_max {  // use if let instead of match when you want to check one pattern and ignore the rest - less verbose
         println!("The maximum is configured to be {}", max);
+        some(max)
     }
 }
 
@@ -72,3 +73,4 @@ fn catch_all(value:i8){
     }
 
 }
+
