@@ -1,6 +1,5 @@
-workspace = { members = ["paths"] }
 [package]
-name = "modules"
+name = "paths"
 version = "0.1.0"
 edition = "2021"
 
