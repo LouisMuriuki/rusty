@@ -1,5 +1,7 @@
-use crate::iterator::iterator as iterate_overfns;
+use crate::iterator as iteratorMain;
+use crate::enum_vector as enum_vectorMain;
 pub mod iterator;
+pub mod enum_vector;
 fn main() {
     let mut vec1 = vec![1, 2, 3, 4]; // using macros
     let mut vec2: Vec<i32> = Vec::new(); //creates a new empty vector, you must explicitly type here
@@ -13,6 +15,9 @@ fn main() {
         Some(second) => println!("we have a value{}", second),
         None => println!("we have a value"),
     }
-    iterate_overfns::iterate_over_print();
-    iterate_overfns::iterate_over_mut();
+    iteratorMain::iterator::iterate_over_print();
+    iteratorMain::iterator::iterate_over_mut();
+
+    enum_vectorMain::enum_vector::vector_enum()
+
 }
