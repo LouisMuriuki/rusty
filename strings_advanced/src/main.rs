@@ -42,14 +42,14 @@ fn main() {
         // since the above string take 2 bytes per character the result will be Зд instead of Здра 
         // s1 will be of type &str
         // let s = &hello[0..1];we’d get a compile error
-        
+
         // returns individual values of type char
         for c in s1.chars(){
             println!("{}",c);
         }
 
         // returns raw bytes
-        for c in s1.byte(){
+        for c in s1.bytes(){
             println!("{}",c);
         }
     }
