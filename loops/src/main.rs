@@ -1,13 +1,23 @@
 fn main() {
     println!("Hello, world!");
-    for_loop();
+    // for_loop();
+    // multiloop()
 }
 fn for_loop() {
-    for number in (1..4).rev() { // a range of numbers not including the last one
+    for number in (1..4).rev() {
+        // a range of numbers not including the last one
         println!("{number}");
     }
-    for number in (1..=4).rev() { // a range of numbers including the last one
+    for number in (1..=4).rev() {
+        // a range of numbers including the last one
         println!("{number}");
+    }
+
+    for number in 1..=10 {
+        println!("{}", number);
+        if (number == 5) {
+            break;
+        }
     }
 }
 
@@ -25,28 +35,29 @@ fn for_loop() {
 //     println!("The value of x is: {}",_result);
 // }
 
-// fn multiloop() {
-//     let mut count = 0;
-//     // loop label
-//     'counting_up: loop {
-//         println!("count = {count}");
-//         let mut remaining = 10;
+fn multiloop() {
+    let mut count = 0;
+    // loop label
+    'counting_up: loop {
+        // loop label initialized by single quote
+        println!("count = {count}");
+        let mut remaining = 10;
 
-//         loop {
-//             println!("remaining = {remaining}");
-//             if remaining == 9 {
-//                 break;
-//             }
-//             if count == 2 {
-//                 break 'counting_up;
-//             }
-//             remaining -= 1;
-//         }
+        loop {
+            println!("remaining = {remaining}");
+            if remaining == 9 {
+                break; // going to break the inner most loop
+            }
+            if count == 2 {
+                break 'counting_up; //going to break the counting up loop hence it prints out End count and the code stops
+            }
+            remaining -= 1;
+        }
 
-//         count += 1;
-//     }
-//     println!("End count = {count}");
-// }
+        count += 1;
+    }
+    println!("End count = {count}");
+}
 
 // fn lift_off() {
 //     let mut timer = 10;
@@ -55,4 +66,7 @@ fn for_loop() {
 //         println!("{}", timer);
 //         timer -= 1;
 //     }
-// }
+// loops so far:
+// -for loop
+// -if..else
+// -while
