@@ -3,12 +3,12 @@ fn main() {
     // we cannot have two mutable references in the same scope.this examples shows a scenario where it looks like we do but that isno the case
     let mut lui = "lui".to_string();
     //if we interchange the two lines we have an error
-    appendMuriuki(&mut lui);
+    append_muriuki(&mut lui);
     let s1 = &mut lui;
     print!("{}", s1);
 }
 
-fn appendMuriuki(name: &mut String) {
+fn append_muriuki(name: &mut String) {
     name.push_str(" Muriuki");
 }
 
