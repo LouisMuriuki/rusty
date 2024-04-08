@@ -42,35 +42,38 @@ fn main() {
     let coin = Coin::Quarter(State::California);
     get_value_in_cents_enum(coin);
     let five = check_empty_before_add(Some(1));
+    let optional_five = match five {
+        None => 0,
+        Some(five) => five,
+    };
+    print!("{}", optional_five );
     value_in_cents(Coin::Penny);
-    println!("Hello, world!{:#?}",five);
+    println!("Hello, world!{:#?}", five);
     catch_all(001);
 }
 
 fn check_empty_before_add(value: Option<i8>) -> Option<i8> {
     match value {
         None => None,
-        Some(value) => Some(value+1),
+        Some(value) => Some(value + 1),
     }
 }
 
-fn if_let(value: Option<i8>) -> Option<i8> {
+fn if_let() {
     let config_max = Some(3u8);
-    if let some(max) = config_max {  // use if let instead of match when you want to check one pattern and ignore the rest - less verbose
+    if let Some(max) = config_max {
+        // use if let instead of match when you want to check one pattern and ignore the rest - less verbose
         println!("The maximum is configured to be {}", max);
-        some(max)
     }
 }
 
 // enum and match make a great combination to runs special functions for some values and one function for the rest.
-fn catch_all(value:i8){
-    match value{
+fn catch_all(value: i8) {
+    match value {
         1 => println!("one"),
         2 => println!("two"),
         3 => println!("three"),
         _ => println!("anything"), //represent all other values not used
-        _ =>(), //represent all other values not used, here nothing will happen- represnt by unit value- the empty turple type
+        _ => (), //represent all other values not used, here nothing will happen- represnt by unit value- the empty turple type
     }
-
 }
-

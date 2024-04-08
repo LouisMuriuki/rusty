@@ -2,14 +2,14 @@ Rust Notes
 
 Uses 4 spaces instead of tab
 
-!-symbolises macros- they are like functions  #compile and run two steps  compile - rustc main.rs
-Run - ./main  Cargo
+!-symbolises macros- they are like functions#compile and runtwo steps compile - rustc main.rs
+Run - ./mainCargo
 cargo new hello_rust
  Compile- cargo build
  Run - ./target/debug/hello_cargo
- Compile and run - cargo run  check if it compiles - cargo check
-Cargo build - -release   Programming a guess Game
-Prelude-a list of things rust imports automatically in every rust program without the use of “use “ directive
+ Compile and run - cargo run check if it compiles - cargo check
+Cargo build —release Programming a guess Game
+Prelude-a list of things rust imports in every rust program
 By default variables are Immutable meaning they can’t change, TO MAKE THEM MUTBLE WE pass mut keyword
 
  let mut guess = String::new();
@@ -17,215 +17,223 @@ By default variables are Immutable meaning they can’t change, TO MAKE THEM MUT
 
 
  Generating secret Number
-Rust does not have random number generation functionality in its standard library but there is a rand crate  with said functionality	 crate is a collection of  rust source code
+Rust does not have random number generation functionality in its standard library but there is a rand crate  with said functionality	crate is a collection of  rust source code
 Rand crate - is a library- code intended to be used by other programs not executed on its own.
-Cargo doc —open documentation  locally available to developers 
-Cargo build - creates an executable file in target/debug/nameofFile. - debug since default build is debug   Match- an expression made up of arms, the arms consist of a pattern to match against, and the value to be run if the value given to the match fits the the arms pattern  shadowing allows us to reuse a variable- esp when converting it from one type to another
+Cargo doc —open documentation  locally available to developers Match- an expression made up of arms, the arms consist of a pattern to match against, and the value to be run if the value given to the match fits the the arms patternshadowing allows us to reuse a variable- esp when converting it from one type to another
 
-parse method on strings convert strings to another type, however we must type the variable accordingly .i.e
-let string=“9” let number:i32=string.parse().expect(“failed”);
+parse method on strings convert strings to another type, however we must type the variable accordinglyi.e
+let string=“9”let number:i32=string.parse().expect(“failed”);
 
 Variables
-In rust “” (double quotes-String) while ‘’ (single quotes -character) constants are immutable in nature, usually in uppercase  and must have type declared, 
-Mutability - ability of a variable to be reassigned another value  DataType
+In rust “” (double quotes-string) while ‘’ (single quotes -character)constants are immutable in nature, usually in uppercase  and must have type declarecred, 
+Mutability - ability of a variable to be reassigned another valueDataType
 Every rust value has a type to tell what kind of data is being specified so as to know how to work with that data
- 1.scaler-datatypes that represent single value I.e integer, floating-point, numbers, boolean, characters 
+1.scaler-datatypes that represent single value I.e integer, floating-point, numbers, boolean, characters
 -Integer overflow wrapping - The values greater than the minimum value a type can hold, wrap around to the minimum of the values the type can hold
- &str- is not a scalar data type since it holds a sequence to a reference of another datatype typically stored on the heap.
- 2.compound- datatypes that group multiple values into one  1.turple a group of a number of different elements of different types. Have a fixed length : cannot grow or shrink-immutable- stored on  let tup:(i32, f64, u8)=(500,6.4,1) -comma separated list inside parentheses 
-Access individual values via:   1. destructuring the turple
-Let (x,y,z)=tup;
-Println!(x);
+2.compound- datatypes that group multiple values into one1.turple a group of a number of different elements of different type. cannot grow or shrink-immutablelet tup:(i32, f64, u8)=(500,6.4,1)
+Access individual values via:  1. destructuring the turple
 2. Dot index of item let tano=tup.0
-They don’t name thier elements
 
-Unit-is a  turple without any value
-Usually what is returned in an empty expression
+Unit- turple without any value
 Let tup:()=()
 
 2.Array
-An array is Collection of multiple values with same types have fixed length - don’t grow or shrink-immutable
+Collection of multiple values with same typeshave fixed length - don’t grow or shrink
 Type it by setting the datatype of the numbers followed by the number of elements
 Let array:[I32,5]=[12,12,12,33,3]
 
 Initialise array to contain same values
-As let array a= [3;10] will contain 10 elements defaulting to number 3 accessing the array-a[3]  Polymorphism- oop concept to access objects of different types through same interface
-In rust this is achieved with traits and generics- not sure how though? I.e (not 100% correct-typically, but can be used in an argument) In java different functions can have same name but the correct will run depending on the parameters past
+As let array a= [3;10]will contain 10 elements defaulting to number 3accessing the array-a[3]Polymorphism- oop concept to access objects of different types through same interfaceI.e java in different functions can have same name but the correct will run depending on the parameters past
 
-FUNCTIONS -uses snake case for functions and variables 
+FUNCTIONS-uses snake case for functions and variables 
 Parameters- are placeholders for arguments
-Arguments- real values passed to the function 
+Arguments- real values passed to the function
 Passing the type of a parameter, ensures you don’t need to define the type ever again in the scope, also provide more error messages
 
 Statements are instructions that perform some action but don’t return a value I.e let y=6; assignment is a statement 
-Expressions evaluate to resultant value I.e calling a function, macro, a new curly brackets is a expression I.e last item before curly brackets ends does not have semi-colon let y={
+Expressions evaluate to resultant value I.e calling a function, macro, a new curly brackets is a expression I.elet y={
     let x=3;
         x+1
-} 
+}
 If you add a semicolon  at the end of the last line the curly brackets changes to a statement and hence the code doesn’t compile
 
 
 A function can return a value but the type must be defined after the arrow 
 
-Control Flow if condition
- loops-loop{}
+Control Flowif condition
+loops-loop{}
 Loops are infinite, 
-Stops code execution using break; you can also return a value from a loop by adding the value you want returned after the break then assign the loop to a variable I.e  refer to loops code in GitHub 
+Stops code execution using break;you can also return a value from a loop by adding the value you want returned after the break then assign the loop to a variable I.e refer to loops code in rusty
 -while loop- eliminates combination of loop and if else
 -if else
--for loop - much better suited for loop with collections I.e arrays   OWNERSHIP
+-for loop - much better suited for loop with collections I.e arrays OWNERSHIP
 Set of rules that govern how rust program manages memory.
 Gives rust memory safe superpowers.
- HEAP AND STACK
+HEAP AND STACK
 Both the stack and the heap are parts of memory available to your code to use at runtime
 STACK
-Uses last in, first out approach -LIFO Adding data to stack is pushing, pop is the opposite All data stored on the stack must have a known, fixed size. 
+Uses last in, first out approach Adding data to stack is pushing, pop is the oppositeAll data stored on the stack must have a known, fixed size. 
 Data with an unknown size at compile time or a size that might change must be stored on the heap
 
 HEAP
-Less organised, to put data on the heap, you must request for a certain amount of space, memory allocator will then look for space that is big enough and mark it as in use, and returns a pointer which is the address of that location - Allocating the heap or just allocating Adding data to stack is not allocating Because the pointer is a known, fixed size, you can store the pointer in a stack, but when you want the actual data you must follow the pointer Pushing to stack is much more faster and efficient since the allocator does not need to look for memory in the first place. Accessing data in heap is much more slower than stack because you have to follow a pointer to get data, also data is scattered Processor are faster if they jump less in memory, and access data in a more organised manner.
- When your code calls a function, the values passed into the function (including, potentially, pointers to data on the heap) and the function’s local variables get pushed onto the stack. When the function is over, those values get popped off the stack.  Ownership rules ~Each value in rust has an owner.
+Less organised,to put data on the heap, you must request for a certain amount of space, memory allocator will then look for space that is big enough and mark it as in use, and returns a pointer which is the address of that location - Allocating the heap or just allocatingAdding data to stack is not allocatingBecause the pointer is a known, fixed size, you can store the pointer in a stack, but when you want the actual data you must follow the pointerPushing to stack is much more faster and efficient since the allocator does not need to look for memory in the first place.Accessing data in heap is much more slower than stack because you don’t have to follow a pointer, data is scatteredProcessor are faster if they jump less in memory, and access data in a more organised manner.
+When your code calls a function, the values passed into the function (including, potentially, pointers to data on the heap) and the function’s local variables get pushed onto the stack. When the function is over, those values get popped off the stack.Ownership rules~Each value in rust has an owner.
 ~Each value can only have one owner at a time 
-~when the owner goes out of scope, the value is dropped 
-The String Type: a value of type string is most likely stored on the heap as it contains data that is of an unknown size at runtime (mutable) as compared to other data types discussed above.
+~when the owner goes out of scope the value is dropped
+The String Type:a value of type string is most likely stored on the heap as it contains data that is of an unknown size at runtime (mutable) as compared to other data types discussed above.
 A value of type String is mutable while a  string literal ie. let =“hey” is immutable
 Use push_str to mutate and append strings - // push_str() expects type &str
-push method will add a character to the string
 
-In rust memory is automatically returned once the variable goes out of scope. Rust calls drop method(which will return the memory ) at the closing of curly brackets 
-I.e For type string,the stack will store length, capacity and pointer. The pointer will in turn point to the memory location used on the heap
-Length- memory in bytes that the contents of type String are using Capacity - memory in bytes that the  type String has received from allocator
- Note :
-Since we store data from type string in heap and the pointer etc on stack, copying a variable of string type to another only copies the 3 pieces of data stored on the stack, the actual data held by the variable is not copied, if mishandled this might lead to compilation errors I.e s1=s2 we can solve for this using references s1=&s2 If rust somehow would be able to copy both the data  on the heap and stack this would be a very expensive calculation. One of rust design choice is to never create deep copies of your data(only copy data on stack memory), therefore any automatic coping is assumed to be inexpensive(shallow copy) in terms of runtime performance. 
-Since rust cleans up and drops memory when a variable goes out of scope, when binding one string to another they both point to the same memory and hence they can drop the same memory(double freeze error), however after the line s1=s2 rust no longer considers s1 valid and doesn’t free anything  since we are only copying the 3 pieces of data it is refereed to as shallow copy but in rust, since we take the step further and invalidate the memory we call it a move
- Variables and Data Interacting with Clone to copy data without invalidating we can use .clone() method- this may be expensive  this is because it is going to deeply clone our variable by coping the data in the heap as weell Integers however are of a known size at compile time so they are stored on the stack and making copies is not that expensive hence we can use : let y=5; let x=y;   without clone method values stored on the stack don’t have a deep copy. we have access to a special annotation called the copy trait that we can place on types stored on stack, if a type  implements the copy trait, the variable using it  can be copied without invalidation.however the type must not have implemented  the Drop trait prior Any group of simple scalar value can implement the copy trait.  Ownership and Functions
-Passing a variable to a function will copy or move the variable just like assignment, in order to retain the ownership we can return the passed parameter back to return ownership
-  Or use references as explained below:
+
+In rust memory is automatically returned once the variable goes out of scope. Rust calls drop method(which will return the memory ) at the closing of curly brackets
+I.e in for type string the stack will store length, capacity and pointer. The pointer will in turn point to the memory location used on the heap
+Length- memory in bytes that the contents of type String are usingCapacity - memory in bytes that the  type String has received from allocator
+Note :
+Since we store data from type string in heap and the pointer etc on stack, copying a variable of string type to another only copies the 3 pieces of data stored on the stack, the actual data held by the variable is not copied, if mishandled this might lead to compilation errorsI.e s1=s2If rust somehow would be able to copy both the data  on the heap and stack this would be a very expensive calculation.One of rust design choice is to never create deep copies of your data(only copy data on stack memory), therefore any automatic coping is assumed to be inexpensive(shallow copy) in terms of runtime performance.
+Since rust cleans up and drops memory when a variable goes out of scope, when binding one string to another they both point to the same memory and hence they can drop the same memory(double freeze error), however after the line s1=s2 rust no longer considers s1 valid and doesn’t free anythingsince we are only copying the 3 pieces of data it is refereed to as shallow copy but in rust, since we take the step further and invalidate the memory we call it a moveto copy data without invalidating we can use .clone() method- this may be expensive Integers however are of a known size at compile time so they are stored on the stack and making copies is not that expensive hence we can use : let y=5; let x=y;   without clone methodwe have access to  a special annotation called the copy trait that we can place on data stored on stack, if the type is implemented the variable can be copied without invalidation.however the type must not have implemented  the Drop trait priorAny group of simple scalar value can implement the copy trait.Ownership and Functions
+Passing a variable to a function will copy or move the variable just like assignment,in order to retain the ownership we can return the passed parameter back to return ownership
+  Or use references as explained below
 Return Values 
-We must specify the type of the return value of a function
-Return values from functions also return ownership  References and Borrowing
+Return values from functions also return ownershipReferences and Borrowing
 -refer some value without ownership
 Opposite is dereferencing which uses *
-Reference- is like a pointer we can follow to access data stored on that address, usually data is owned by another variable guaranteed to point to existing and valid data unlike an actual pointer.		 The concept of losing ownership each time you pass a variable to a function is a bit too much, hence we introduce references.  Borrowing
+Reference- is like a pointer we can follow to access data stored on that address, usually data is owned by another variableguaranteed to point to existing and valid data unlike an actual pointer.		The concept of losing ownership each time you pass a variable to a function is a bit too much, hence we introduce references.Borrowing
 The Process of creating references
 Immutable by default- cannot be changed
 You cannot borrow more than one value at a time 
 This prevents data races: they can occur in either of the following reasons:
 * Two or more pointers access the same data at the same time.
 * At least one of the pointers is being used to write to the data.
-* There’s no mechanism being used to synchronize access to the data
-Mutable References
-Although references are immutable, we can make them mutable using the mut keyword i.e let mut y = “Hi”.to_string() if you have a mutable reference to a value, you can have no other reference to that value in that scope
+* There’s no mechanism being used to synchronize access to the data.
 Not possible:
-    let r1 = &s; // no problemz
+    let r1 = &s; // no problem
     let r2 = &s; // no problem
     let r3 = &mut s; // BIG PROBLEM
 
-Why? We can only have one mutable reference or a number of mutable references at a time in a scope why?  To prevent data races what are data races? Is a condition where    1. two pointer access the same data at the same time
-2. At least one of the pointers is being used to write to the data.
-3. There’s no mechanism being used to synchronize access to the data
-
-We can use curly brackets to our advantage though, to set up scopes and hence use multiple refences.	 Note a reference’s scope starts from where it is introduced and continues through the last time that reference is used.
-Possible:      {
+We can use curly brackets to our advantage though, to set up scopes and hence use multiple refences.	Note a reference’s scope starts from where it is introduced and continues through the last time that reference is used.
+Possible:     {
         let r1 = &mut s;
     } // r1 goes out of scope here, so we can make a new reference with no problems.
 
-    let r2 = &mut s;  you can have multiple immutable references assignment as immutable reference only read and don’t change the data of the variable
+    let r2 = &mut s;you can have multiple immutable references assignment as immutable reference only read and don’t change the data of the variable
 
-Dangling References
-
+Dangling references.
 Sometime we can have a pointer pointing to some non existent location in memory or to a location that might have been given to some other owner.
 Rust prevents this by a compile time error
-Check the book example.
 
-The Rules of References
- 1 A reference must be valid at all times.
+Reference rules1 A reference must be valid at all times.
 2 You can only have one mutable reference or a number of immutable references at a time
-- Having a single mutable reference ensures we prevent data races,  The Slice Type
-A kind of reference, so it does not have ownership
+- Having a single mutable reference ensures we prevent data races,The Slice Type
+A kind of reference.
 Enables you to reference a consecutive subset of elements within a collection rather than the entire collection.(potion of a string)
 Does not have ownership.
 We create references by using a range within brackets by specifying the starting index and  end index which is not included	
 Length of slice = ending index - starting index
 I.e [0..10] -from 0 -10 , 10 not included
 I.e [..] - whole string
-i.e [..6] - starting from zero, 6 not included 
+i.e [..6] - starting from zero, 6 not included
 Type that signifies string type is &str -note difference with &String
 as_bytes()=convert strings in to an array of bytes
-iter()=is a method that returns each element in a collection
-Enumerate. Wraps the result of inter and and returns each element as a part of a tuple
-b’ ‘ - byte literal syntax for a space  String literals as Slices.
+iter()=is a method that returns each element in a collectionString literals as Slices.
 Both use the &str type 
 Meaning they are both immutable references.
 String literals are stored inside the binary, this means they are part of something
 This means that string literals are slices already by default;
 &String-mutable
-&str-immutable 
-When passing parameters to function a more experienced rustacean would use The &str type instead of the &String type as it allows for much more functionality
-This allows for our api to be more useful and general without loosing functionality
+&str-immutable
+When passing parameters to function a more experienced rustacean would use the &str type instead of the &String type as it allows for much more functionality
  Check GitHub for more	 
 String slices are generally used as part of a string but there are other types of slices too I.e array slices.
 
-Other Slices
-There also other type of slices as string slices is specific to strings
-Above we looked at -byte slices
-We ,might want to refer to part of an array as below:
 Array slice i.e 
 Let array=[1,2,3,4,5,6,7,8,9];
-Let array_slice=&array[0..=5];
 Refer to GitHub
 
-Defining and instantiating Structs
-Structs are like tuples in that they hold multiple related values similarity: can hold data of different types
-diff: you’ll name each piece of data so its clear what the values mean.
-Adding name means structs are more flexible in that you don’t have to rely on the order of data to specify or access the values of an instance.
-Basically there structure is similar to object interface in js
-To use a struct we define an instance of the struct and add curly brackets with key and pair -just like in js
 
-We can create instances from other instances using the struct update syntax .. , which looks like speed operator in js … we use assignment  operator = unlike colon in js where we use colon as such: we use the assignment operator to show that that data is being moved,
+Defining and instantiating Structs
+Structs are like tuples in that they hold multiple related values of different typessimilarity: can hold data of different types
+diff: in structs, you’ll name each piece of data so its clear what the values means, in tuples you have to use the index to access the particular value of data.
+Adding name means structs are more flexible in that you don’t have to rely on the order of data to specify or access the values of an instance.
+Basically the structure of structs is similar to an object interface in js
+To use a struct we define an instance of the struct and add curly brackets with key and pair -just like in js
+user{age:i32,
+Name:String,
+}
+
+Let user= user{age:String::from(23),
+Name:string::from(“luiio”),
+}
+
+We can create instances from other instances using the struct update syntax (..) two dots , which looks like speed operator in js (…) three dots
+Let user1=user{
+Name:string::from(“luv”),
+..user
+}
+we use assignment  operator = unlike colon in js where we use colon as such:we use the assignment operator to show that that data is being moved,(however note that those datatypes that implement the copy trait are usualy not moved but rather copied)
 however the struct will become invalid if we spread data on it stored on the heap i.e (Strings,Compound types) to another struct
 however if we spread only scalar datatype, struct is still valid,
-we use the assignment operator to show that that data is being moved,
 
- Turple structs
-Have the added meaning of a struct but don’t have name fields rather only a name and the types of the field
+Turple structs
+They have the added meaning of a struct but don’t have name fields rather only a name and the types of the field
+Example of a tuple:
+Let tuple:(i32,i32,f64)=(0,0,0.90);
+Example of a tuple struct:
 struct Point(i32, i32, i32);
+
+Useful for when you want give the whole tuple a name and make the tuple of different type from the rest.useful when writing the name for each field would be verbose.
 
 fn main() {
     let black = Color(0, 0, 0);
     let origin = Point(0, 0, 0);
 }
 
+Unit-Like Structs Without Any Fields
+You can also define unit like structs, this are structs that don’t have any fields, behave similarly to ()useful when you want to implement a trait on some type but don’t have any data that you want to store in the type itself
+struct AlwaysEqual;
+let main=AlwaysEqual;Ownership of Struct Data
+In structs in order for the struct data to be valid, we use String type rather than string refernces, this way we ensure our data is valid, however we could use string references as well, but include lifetimes in themlifetimes ensure data referenced by the structure is valid as long as the structure is valid.
 
 An Example Program Using Structs
 Refer to GitHub
  
 Structs  in general will group related data that work together
-By default we can’t. Use the println macro to display complex data like structs, this is because structs don’t implement the ‘Display’ trait. Instead we can {:?} instead of {}  just to info the compiler we want to use an output format called debug  we must also explicitly	opt in to debugging information by adding #[derive(Debug)] before structs definition
+By default we can’t use the println macro to display complex data like structs, this is because structs don’t implement the ‘Display’ trait.Instead we can {:?} use instead of {}  just to inform the compiler we want to use an output format called debug we must also explicitly	opt in to debugging information by adding #[derive(Debug)] before structs definition
 
-Instead of println!() we can use dbg!() however it takes ownership of a expression, prints file and line number and the value and returns the ownership
+Instead of println!() we can use dbg!()however it takes ownership of a expression, prints file and line number and the value and returns the ownership
+-we can pass a reference instead to counter this ;)
 
 Defining methods in structs:
+Methods are defined within the context of a struct (or enumeration or trait object)
 Methods are like functions but their first parameter is always self, which rep the instance of the struct the method is being called on.
 I.e  struct_instance.method()
 Check github
 
-Methods also take ownership,borrow mutably or immutably and return ownership as well  Associated functions
-All functions defined within an impl block are called associated functions because they’re associated with the type named after the impl Associated function can be  defined without passing self as first parameter and hence the ya re not considered to be methods I.e String::from(“text”) - from is an associated function here Associated function are not methods,
-They are used to define a new instance of the	 struct often called new, new is not a keyword in rust though check GitHub
+Methods also take ownership,borrow mutably or immutably and return ownership as wellAssociated functions
+All functions defined within an impl block are called associated functions because they’re associated with the type named after the implAssociated function are  be  defined without passing self as first parameter and hence they are not considered to be methods I.e String::from(“text”) - from is an associated function hereAssociated function are not methods,
+They are used in making constructors that return a new instance of the struct often called new, new is not a keyword in rust though
+Impl rectangle{
+fn square(size:u32)-> Self{
+Self{
+Width:size,
+Height:size,
+}
+}
+}check GitHub
 
 
 Enums and pattern matching
 Enums allow you to define a type by enumerating its possible values.
 Values inside an enum should begin with capital letters
 
-enum IpAddrKind{ V4,
-V6
+enum IpAddrKind{V4,
+V6(String)
 }
 
 IpAddrKind - becomes a custom datatype that we can use
 We can create instances as follows:
 Let four=IpAddrKind::V4
+Enums can as well hold their data
+ Let six=IpAddrKind::V6(String::from(“luv”))
 
 We can use enums as well to store data in a more concise manner
 Enums allows us to store more complex data even then structs:
@@ -235,7 +243,12 @@ V6(String)
 }
 
 We can basically  hold any data with enums, including other enums,  structs etc
-Just like structs we can define methods on enums  The Option Enum and its adv over null values  The standard lib has a couple of predefined enums and option is one of them, it basically encodes a scenario where a value could be something or nothing preventing null values.
+Just like in structs we can define methods on enums using the impl keyword The Option Enum and its adv over null values
+
+enum Option<T>{None,
+Some(T)
+}The standard lib has a couple of predefined enums and option is one of them,- it is defined in the prelude, so there is no need to import it again
+it basically encodes a scenario where a value could be something or nothing preventing null values.
 Rust does not have the null feature that many languages have, null means that there is no value.
 
 In rust anywhere we see Option<T> we can assume that the value will at one point have a null value,
@@ -243,13 +256,18 @@ Likewise to use a value that might be null, we must explicitly use the Option<T>
 
 This ussually defined in the std lib 
 it is so usefull that it is included in the prelude, we can even use the values without the option:: prefix,,check code below
- option enumeration has a large number of inbuilt methods.
+
+Let value=Some(5)
+Value will be of type Option<i8> and not i8- note these are two different types and hence if you try to add them etc you might get a compiler error.
+option enumeration has a large number of inbuilt methods.
 Check GitHub
 
 The match Contro flow Construct
 Allow you to compare values against series of patterns and execute code based on which pattern matches
+Things you can do with match:1. Bind to values 
+2. Matching with option T to check whether the value is a None  value 
 
-List match keyword followed by an expression , followed by  arms: have two parts (pattern and some code) i.e(coin::Penny) and the  => operator which separates the pattern , then followed by code -check GitHub
+List match keyword followed by an expression , followed by  arms: have two parts (pattern and some code) i.e(coin::Penny) and the  => operator with separates the pattern , then followed by code -check GitHub
 Diff with IF : with if the condition needs to evaluate to a boolean value, here it can be any type.
 
 Extracting values from enum Variants
@@ -257,11 +275,26 @@ Match expressions  can help achieve this, check out GitHub
 
 Match with option<T>
 -say you want to check if value if available before you execute function, you can use match: check GitHub
+Match keyword followed by an expression.more like how an if statement is but the difference is that the if must result to a boolean while match can result in any type
+
+Change Option<T> to T in rust
+We can use the match expression to do the conversion as below:  let optional_five = match five {
+        None => 0,
+        Some(five) => five,
+    };
+Notice at none I returned zero, this will depend on you and how you want to work with your data.
 Matches are exhaustive:we must exhaust every last possibility in order for the code to be valid. 
-- they won’t compile if you have not covered all possible values, I.e won’t compile if you check for some(I) only when the type is of Option<T> (you have left out None and the compile knows that) this addresses the billion dollar mistake of having null values in our code.  catch all pattern using the match and enums we can perform special functions on some values and one for the rest check GitHub 
+- they won’t compile if you have not covered all possible values, I.e won’t compile if you check for some(I) only when the type is of Option<T> (you have left out None and the compile knows that)this addresses the billion dollar mistake of having null values in our code.catch all patternusing the match expression on enums we can perform special functions on some values and one for the rest (catch-all). check GitHubthis ensures that the match expression id exhaustive and handles and cases avoiding the billion-dollar mistake we are trying to evade in the first place.
+For The catch all we can use the specific value passed to the function executing our match and these value will bind to the value of the specific enum variant should the pattern matchAlternatively we could use the inbuilt catch_all (_).
+It will however not bind to the value of the resulting variant of the enum.
 IF LET
-Let you compare values  that match one pattern and ignore the rest in a less verbose manner as compared to match statement.we don’t have to include that _ => () bs as in match takes a pattern followed by an expression separated by equals sign
-If let can also have an else statement. The else block will run code that would be equivalent to _ => () above. for example we can include code to incrementally count the number once a value doesn’t match a pattern GitHub
+Let’s you compare values  that match one pattern and ignore the rest in a less verbose manner as compared to match statement.we don’t have to include that _ => () bs as in match
+However you loose exhaustive checking that match enforces.takes a pattern followed by an expression separated by equals sign
+ Let a =some(2U8)
+If let Some(x)= a{
+Print!({max})
+}
+If let can also have an else statement. The else block will run code that would be equivalent to _ => () above.for example we can include code to incrementally count the number once a value doesn’t match a pattern GitHub
 
 
 Managing Growing Projects with Packages, Crates, and Modules
@@ -269,7 +302,7 @@ Managing Growing Projects with Packages, Crates, and Modules
 As code grows we will need to separate and group related code
 A package can contain multiple binary crates and optionally one library crate
 As a package grows, you can extract parts into separate crates that become external dependencies. This chapter covers all these techniques. 
-We’ll also discuss encapsulating implementation details, which lets you reuse code at a higher level: some parts of our code can be public while others are private Scope-  programmers and compilers need to know whether the name used in a particular block of code refers to a variable, function enum, struct.etc, for this we can define a scope were that part of the code can only have one name occurrence.
+We’ll also discuss encapsulating implementation details, which lets you reuse code at a higher level: some parts of our code can be public while others are privateScope-  programmers and compilers need to know whether the name used in a particular block of code refers to a variable, function enum, struct.etc, for this we can define a scope were that part of the code can only have one name occurrence.
 Rust has a number of features that allow you to manage your code’s organization, including which details are exposed, which details are private, and what names are in each scope in your programs. These features, sometimes collectively referred to as the module system, include:
 * Packages: A Cargo feature that lets you build, test, and share crates
 * Crates: A tree of modules that produces a library or executable
@@ -277,17 +310,17 @@ Rust has a number of features that allow you to manage your code’s organizatio
 * Paths: A way of naming an item, such as a struct, function, or module
 
 Packages and Crates
-Crate- Is the smallest amount of code that the rust compiler considers at a time(collection of rust source code that compiles at the same time) -Binary crate
+Crate- Is the smallest amount of code that the rust compiler considers at a time(collection of rust source code that compiles at the same time)-Binary crate
 -Library crate
 
 Binary crate- rust code that you can compile to an executable and run (smallest hello world code is a crate it self)
 It contains a main fn that defines what’s happens when the executable runs
 Library crates - don’t compile to an executable n either do they have a main fn but rather define functionality intended to be used by multiple	projects.
 
-But in general crate means a library as used in other languages  Package- is a bundle of one or more crates that provides a set of functionality
+But in general crate means a library as used in other languagesPackage- is a bundle of one or more crates that provides a set of functionality
 A package contains cargo.toml file that  describes how to build this crates
 A package can contain more than one binary crate but at most one library crate and at least one crate	
-If cargo finds a src/main.rs it knows this is a binary crate and if it finds a src/lib.rs it  library crate.
+If cargo finds a src/main.rs it knows this is a binary crate and if it finds a src/lib.rs it knows this is a library crate.
 To have multiple binary crates place your files inside src/bin directory
 
 Defining Modules to Control Scope and Privacy
@@ -297,14 +330,13 @@ Defining Modules to Control Scope and Privacy
 * Inline, within curly brackets that replace the semicolon following mod garden
 * In the file src/garden.rs
 * In the file src/garden/mod.rs
-3.Declaring sub modules- can be declared in any other file part frommthe root crate
+3.Declaring sub modules- can be declared in any other file part from the root crate
 * The compiler will look for the module’s code in these places:
-* Inline, within curly brackets that replace the semicolon following mod garden
-* In the file src/garden/vegetable.rs
-* In the file src/garden/vegetable/mod.rs
+* Inline, within curly brackets that replace the following mod garden
+¸¸¸¸* In the file src/garden/vegetable/zzy
 4. Path to code in modules-once a module is part of your crate, you can refer to any code in that crate as long as privacy rules still apply.eg to refer to type Asparagus we doit as  crate::garden::vegetable::Asparagus
 5. Private vs Public-code within a module is private by default to make public we add the keyword pub before mode
-6. Use keyword- Within a scope, it creates shortcuts to reduce repetition of the long paths.i.e in this path crate::garden::vegetables::Asparagus we can use crate::garden::vegetables::Asparagus and from then on we only need to write Asparagus to make use of that type in the scope
+6. Use keyword- Within a scope, it creates shortcuts to reduce repetition of the long paths.i.e in this path crate::garden::vegetables::Asparagus we can “use crate::garden::vegetables::Asparagus” and from then on we only need to write Asparagus to make use of that type in the scope
 
 Grouping Related Code in Modules
 Modules helps use increase readability, reusabilty and privacy of items-modules are private by default.
@@ -312,13 +344,12 @@ Create a lib with cargo cargo new restaurant —lib
 Modules can hold defination of other items e.g structs,enums, constants, traits- hence you might find them gropued together and named why they are related.
 Devs reading the code can navigate with modules instead of reading through all the definitions in order to find the relevant code they are looking for
 src/main.rs and src/lib.rs are referred to as root crates because the contents of either of the two files form a module named crate at the root of the crates module structure (module tree)
-
 Paths for Referring to an Item in the Module Tree
 
 We use paths to find an item in a modules- just like any prog language
 Absolute path - full path starting from a crate root,
-For Code from an external crate, absolute path begins with the crates name and for code in our current crate the absolute path begins with the literal crate. Relative path - starts from the current module and self , super 	or any identifier in the current module
--both are followed by one or more identifier separated by doubles colon  in rust all items( functions, enums, structs) are private to the parent module by default; hence incase you need to privatize something just put inside a module
+For Code from an external crate, absolute path begins with the crates name and for code in our current crate the absolute path begins with the literal crate.Relative path - starts from the current module and self , super 	or any identifier in the current module
+-both are followed by one or more identifier separated by doubles colonin rust all items( functions, enums, structs) are private to the parent module by default; hence incase you need to privatize something just put inside a module
 Basically children can access parents but parents cannot access children by default unless we give them that option.
 
 Starting Relative Paths with super
@@ -327,7 +358,7 @@ I.e super::deliver_order()
 
 Making Structs and Enums Public
 For structs 
-We will use pub like before however, a struct can be public but its field not public, hence we must also specify which fields are going to be public or not enums
+We will use pub like before however, a struct can be public but its field not public, hence we must also specify which fields are going to be public or notenums
 Pub keyword on the enum name alone will do the trick here
 
 Bringing Paths into Scope with the use Keyword
@@ -340,14 +371,14 @@ Above you might wonder why we didn’t do this
 use crate::front_of_house::hosting::add_to_waitlist();
 add_to_waitlist();
 It is ideally idiomatic/recommended to call a function with its parent, so that it’s clear where the function comes from. I.e
-hosting::add_to_waitlist(); 
+hosting::add_to_waitlist();
 When calling other items, I.e structs, enums etc it is advisable to call the whole function name.
 It’s the way people write rust code.
 
 Providing New Names with the as Keyword
 Sometime we may have to import two items with the same name within our crate, we can use the as keyword to differentiate between	 the two
 use std::fmt::Result;
-use std::io::Result as IoResult;  Re-exporting Names with pub use
+use std::io::Result as IoResult;Re-exporting Names with pub use
 When we bring a name into scope it only available in the new scope which is private, to give the code that calls our code access to that name use can combine use and pub keywords
 This technique is called re-exporting because we’re bringing an item into scope but also making that item available for others to bring into their scope.
 Check the book example
@@ -357,12 +388,12 @@ Using External Packages
  use the absolute path to bring in external crates
 
 Using Nested Paths to Clean Up Large use Lists
-Importing different items from the same modules tends to take a lot of vertical space, hence we can use nested paths to bring into scope the same items in one line we specify the common module followed by two colons then a curly brackets with what we want to import
+Importing different items from the same modules tends to take a lot of vertical space, hence we can use nested paths to bring into scope the same items in one linewe specify the common module followed by two colons then a curly brackets with what we want to import
 e.g use std::{cmp::Ordering, io};
 If we have 
 use std::io;
 use std::io::Write;
-And decide to use nested paths instead we will do it this way use std::io::{self,Write}
+And decide to use nested paths instead we will do it this wayuse std::io::{self,Write}
 
 The Glob Operator - *
  If we want to bring all public items defined in a path we can use glob operator - *
@@ -374,7 +405,7 @@ We first have to load the file using the mod declaration
 
 8.
 Common Collections
-Collections in rust are data structures that store multiple values, unlike arrays or tuples, collections are stored on the heap. Arrays have a fixed known size hence they are stored on the stack
+Collections in rust are data structures that store multiple values, unlike arrays or tuples, collections are stored on the heap.Arrays have a fixed known size hence they are stored on the stack
 * A vector allows you to store a variable number of values next to each other in memory.  Vec<T>
 * A string is a collection of characters	
 * A hash map allows you to associate a value with a particular key.
@@ -383,7 +414,7 @@ Storing Lists of Values with Vectors
 Allows us to store more than one value in a single data structure next to each other in memory
 To create a vector we can  use the Vector::new() function or using the vec!
     let v: Vec<i32> = Vec::new(); //here you have to give the type
-The Vec<T> can hold any type when we create a vector and pass a value to it , rust can infer the type from the value so we rarely have to type it.
+The Vec<T> can hold any typewhen we create a vector and pass a value to it , rust can infer the type from the value so we rarely have to type it.
 However if you create an empty vector you must explicitly type it since rust can’t infer it.
 Rust has a vec! Macro which will create a new vector that holds the value you give it.
 let vec=vec![1,2,3]
@@ -407,14 +438,14 @@ NOne- to handle the case of null values
 Hence here Let third:&<I32>=vec.get(2); we can’t use the &(reference) since get will return  Option<&i32> instead of &i32
 Usage of these two depends on your application needs, eg if you access a non existent value with indexing the program will panic, but if you use get  you can handle null cases with None- eg if the index is a user input you can handle a case and ask them to reenter the number again.
 
-In rust you can’t have mutable and immutable reference in the same scope I.e let mut v =vec![1,2,3,4,5];
+In rust you can’t have mutable and immutable reference in the same scope I.elet mut v =vec![1,2,3,4,5];
 Let first= &vec[0];  
 V.push(6);
  println!("The first element is: {first}");
 
 Pop-removes and returns the last element 
 
-It is not allowed to mutate a vector that is stored on the heap and has been accessed immutably- this tells the compile we are going to perform a read only operation. vector store there value next to each other hence adding a value might lead to memory re-allocation and copying the values if the current doesn’t fit. Hence if we add a new value and try to access your vec we might be accessing a wrong memory hence rust won’t allow you to read the value after you have mutated- program will panic
+It is not allowed to mutate a vector that is stored on the heap and has been accessed immutably- this tells the compile we are going to perform a read only operation.vector store there value next to each other hence adding a value might lead to memory re-allocation and copying the values if the current doesn’t fit.Hence if we add a new value and try to access your vec we might be accessing a wrong memory hence rust won’t allow you to read the value after you have mutated- program will panic
 
 Iterating over the Values in a Vector
 
@@ -424,12 +455,12 @@ To access each item inside the vector we can use for loop to iterate and access 
         println!("{i}");
     }
 For mutable vectors we can modify them by the help of deference operator
-We can use the dereference operator to be able to get the value in I (in the for loop) so that we can mutate the value inside the vector // check GitHub for more
+We can use the dereference operator to be able to get the value in I (in the for loop) so that we can mutate the value inside the vector// check GitHub for more
 
 We normally pass reference to the vector in a for loop because :
 1. The loop would assume ownership of the vector if we did not pass the reference instead- we wouldn’t be able to use the vector again
-2. It prevents simultaneous modifications of the vector at the same time.- Ensure we have only one reference to a mutable data Structure 
-Using an Enum to Store Multiple Types 
+2. It prevents simultaneous modifications of the vector at the same time.- Ensure we have only one reference to a mutable data Structure
+Using an Enum to Store Multiple Types
 A vector can only store values of the same type, this is unconvincing because there are definitely uses cases where wed want to store values of different types in our vector, however the power of the enum can help us here:
 So basically an enum can have multiple values of different types stored together under one type; that of the enum.
 We can essentially  store the different types to the enum , create a vector and pass that enumerates to the vector.
@@ -442,22 +473,22 @@ Text(String)
 Let v =vec![SpreadSheet::Int(4),SpreadSheet::Float(4.87656789),SpreadSheet::Text(String::from(“Slash”)] ;
 
 Dropping a Vector Drops Its Elements
-Like any other struct, a vector Isfreed when it goes out of scope  Storing UTF-8 Encoded Text with Strings
-Strings are implemented as a collection of bytes, and has some methods to provide functionality when those bytes are implemented as text. here we will discuss: 1. operations on strings that every collection type has I.e creating , updating and reading
+Like any other struct, a vector Isfreed when it goes out of scopeStoring UTF-8 Encoded Text with Strings
+Strings are implemented as a collection of bytes, and has some methods to provide functionality when those bytes are implemented as text.here we will discuss:1. operations on strings that every collection type has I.e creating , updating and reading
 2. How strings are different from other collections, namely how indexing to a string is different namely in differences between how people and machines interpret it.
 What Is a String?
-Rust has only only string type in the core language which is the string slice seen as &str string slices are usually references to UTF-8 encoded string data stored else where; string literals are stored in the programs binary and therefore are string slices
+Rust has only only string type in the core language which is the string slice seen as &strstring slices are usually references to UTF-8 encoded string data stored else where; string literals are stored in the programs binary and therefore are string slices
 
 String type is provided by the standard library rather than being coded into the language , is a growable, mutable, owned UTF-8 encoded string type 
 Both String type and &str are UTF-8 encoded
 
 Creating a New String
 Many of the operation available for Sting are available for vector; String is implemented as a wrapper around a vectorof bytes with some extra guarantee, restrictions and capabilities
-Eg the new function. String::new() //vec::new() this creates an empty String but often we wan to have some initial data, we can use this: 1.to_string()- which is available to any type that implements  the display trait	
+Eg the new function. String::new() //vec::new()this creates an empty String but often we wan to have some initial data, we can use this:1.to_string()- which is available to any type that implements  the display trait	
 Let s=“initial text”.to_string();
-2.String::from(“initial_tetx”);  which one to choose is unto yourself, style and readability  Strings are UTF-8 so they can store symbols,characters, emojis, text, etc.
- Updating a String
-Just like the vec<T> String can grow and change it contents if you push data into it. you can use the + or the format! to concatenate values
+2.String::from(“initial_tetx”);which one to choose is unto yourself, style and readability Strings are UTF-8 so they can store symbols,characters, emojis, text, etc.
+Updating a String
+Just like the vec<T> String can grow and change it contents if you push data into it.you can use the + or the format! to concatenate values
 
 Appending to a String with push_str and push
 You can use the push_str method to grow the string by appending a string slice
@@ -468,14 +499,14 @@ Concatenation with the + Operator or the format! Macro
  let s1 = String::from("Hello, ");
     let s2 = String::from("world!");
     let s3 = s1 + &s2; // note s1 has been moved here and can no longer be used
-Si is no longer valid and the reason we used a reference to s2-&s2  has to to with the signature of the method called when we use the + operator is used it looks like :
+Si is no longer valid and the reason we used a reference to s2-&s2  has to to with the signature of the method called when we use the + operator is usedit looks like :
 fn add(self, s: &str) -> String {
-We can only add &str to String and not String with String but as seen we are trying to add &string to String even though the method signature says &str. this is because rust compiler can  coerce a String into a &str[..] also as add does not take ownership of s we can still use s2. we can also see that add take ownership of self as it does not have a & meaning we can ownership os s1 append a reference to s2 and return the result to s3; this statements looks like we are lots of copying but that is not the case, this is actually more efficient than copying your way into it. Remember above we said strings provide a little more capabilities but also restrictions.
+We can only add &str to String and not String with Stringbut as seen we are trying to add &string to String even though the method signature says &str.this is because rust compiler can  coerce a String into a &str[..]also as add does not take ownership of s we can still use s2.we can also see that add take ownership of self as it does not have a &meaning we can ownership os s1 append a reference to s2 and return the result to s3; this statements looks like we are lots of copying but that is not the case, this is actually more efficient than copying your way into it.Remember above we said strings provide a little more capabilities but also restrictions.
 
 Indexing into Strings
 If you try to index a string in rust as with other programming languages, you would get an error.
 Rust does not support indexing in string, why not ? Let understand why
-Some characters ins string take more than one byte- usually a letter will take one byte. due to this if we try to access a string value with index, it may lead upto an unexpected behaviour thus rust won’t compile.
+Some characters ins string take more than one byte- usually a letter will take one byte.due to this if we try to access a string value with index, it may lead upto an unexpected behaviour thus rust won’t compile.
 Bytes and Scalar Values and Grapheme Clusters! Oh My!
 Another point about UTF8 is that there are three ways to looks at string from rust perspective
 -bytes
@@ -485,7 +516,7 @@ As you can see rust stores string in different types so indexing would not be ap
 The final reason why indexing is not possible in rust string is because indexing is expected to take constant time (O(1)). But this isn’t possible to guarantee performance in rust as rust would have to walk through contents from the beginning to the index to determine how many valid charatcters there were.
 
 Slicing Strings
- As we have seen indexing in rust might result to unexpected behaviour, and is difficult due to the three different type it can be stored as. however if you really need to index you can provide a range instead of  of [] with one number I.e
+ As we have seen indexing in rust might result to unexpected behaviour, and is difficult due to the three different type it can be stored as.however if you really need to index you can provide a range instead of  of [] with one number I.e
 let hello = "Здравствуйте";
 let s = &hello[0..4];
 Instead of 
@@ -493,7 +524,7 @@ let hello = "Здравствуйте";
 let s = &hello[4];
 
 Since as discussed earlier this characters take 2 bytes instead of the	normal I byte hence you’d get s=Зд
-If we were to to try and slice part of a character byte as in using the example above let s = &hello[0..1]; we’d get a compile error
+If we were to to try and slice part of a character byte as in using the example abovelet s = &hello[0..1];we’d get a compile error
 Be  careful on how you generate string slices from string to prevent program panicking
 
 Methods for Iterating Over Strings
@@ -504,15 +535,15 @@ Alternatively you can use the byte method which returns each raw byte,208,151,20
 
 
 Storing Keys with Associated Values in Hash Maps
-HashMap<K, V> store their data on the heap
+HashMap<K, V>store their data on the heap
 Object in JS
 Stores a mapping of keys of type K to values of type V using a  a hashing function, which determines how it places this keys and values into memory
 Hashmaps are useful when you wan to search for data, not by using index as with vectors but by using a key that can be of any type.
-Hash maps are there least used among the rust collections hence they are not included in the prelude. 
+Hash maps are there least used among the rust collections hence they are not included in the prelude.
 Creating a New Hash Map
 
-Since they are not in the prelude, we need to use the use key word to bring them into scope use std::collections::HashMap;
-We can create a new hash map by using the new keyword let mut scores=HashMap::new() 
+Since they are not in the prelude, we need to use the use key word to bring them into scopeuse std::collections::HashMap;
+We can create a new hash map by using the new keywordlet mut scores=HashMap::new() 
 We can use insert to adding elements to the hashmap.
  scores.insert(String::from("Blue"), 10);
 
@@ -540,11 +571,11 @@ There are three ways to do it:
 1.Overwriting a Value
 If we add two key values pair contains same name for the key but different values the former will be ignored and the latter be used  as the correct value.
 2.Adding a Key and Value Only If a Key Isn’t Present
-Check if key exists , if not add else don’t add there is a special Api called entry that takes the key you want ot check as a parameter, the return value of entry method is an enum called Entry, that represents a value that might or might not exist.
-scores.entry(String::from(“Blue”)).or_insert(50); since we already have Blue this won’t be inserted. or_insert method on Entry returns a mutable reference to the value for the corresponding entry key if that key exists and if not, insert the parameter as the corresponding value for this key and return the reference to this new value.
+Check if key exists , if not add else don’t addthere is a special Api called entry that takes the key you want ot check as a parameter, the return value of entry method is an enum called Entry, that represents a value that might or might not exist.
+scores.entry(String::from(“Blue”)).or_insert(50);since we already have Blue this won’t be inserted.or_insert method on Entry returns a mutable reference to the value for the corresponding entry key if that key exists and if not, insert the parameter as the corresponding value for this key and return the reference to this new value.
 Updating a Value Based on the Old Value
 Look up keys value, then update it based on the old value,
 The split_whitespace method returns an iterator of string slices that are sub-slices of the original string slice, separated by whitespace.
 
 Hashing Functions
- by default hash maps contain a hashing function called SipHash that can provide resistance to denial of service attacks involving hash tables it is slower but offers better security, you can swap it out in favour of your own choice that is faster by specifying a different hasher Hasher is a type that implements the BuildHasher trait. 
+by default hash maps contain a hashing function called SipHash that can provide resistance to denial of service attacks involving hash tablesit is slower but offers better security, you can swap it out in favour of your own choice that is faster by specifying a different hasherHasher is a type that implements the BuildHasher trait.
