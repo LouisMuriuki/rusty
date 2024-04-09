@@ -29,6 +29,7 @@ In rust “” (double quotes-string) while ‘’ (single quotes -character)con
 Mutability - ability of a variable to be reassigned another valueDataType
 Every rust value has a type to tell what kind of data is being specified so as to know how to work with that data
 1.scaler-datatypes that represent single value I.e integer, floating-point, numbers, boolean, characters
+Default integer type is i32.
 -Integer overflow wrapping - The values greater than the minimum value a type can hold, wrap around to the minimum of the values the type can hold
 2.compound- datatypes that group multiple values into one1.turple a group of a number of different elements of different type. cannot grow or shrink-immutablelet tup:(i32, f64, u8)=(500,6.4,1)
 Access individual values via:  1. destructuring the turple
@@ -350,15 +351,30 @@ We use paths to find an item in a modules- just like any prog language
 Absolute path - full path starting from a crate root,
 For Code from an external crate, absolute path begins with the crates name and for code in our current crate the absolute path begins with the literal crate.Relative path - starts from the current module and self , super 	or any identifier in the current module
 -both are followed by one or more identifier separated by doubles colonin rust all items( functions, enums, structs) are private to the parent module by default; hence incase you need to privatize something just put inside a module
-Basically children can access parents but parents cannot access children by default unless we give them that option.
+Basically children can access parents but parents cannot access children by default unless we give them that option.making a module public does not make the items in the modules public, you will have to make them public as well- this includes structs, enums, etc.-Modules are containers
 
 Starting Relative Paths with super
 We can construct relative paths that begin in the parent module, rather than the current module or the crate root, by using super at the start of the path-  like using .. syntax
-I.e super::deliver_order()
+I.e 
+fn deliver_order() {}
+
+mod back_of_house {
+    fn fix_incorrect_order() {
+        cook_order();
+        super::deliver_order();
+    }
+
+    fn cook_order() {}
+}
 
 Making Structs and Enums Public
 For structs 
-We will use pub like before however, a struct can be public but its field not public, hence we must also specify which fields are going to be public or notenums
+We will use pub like before however, a struct can be public but its field not public, hence we must also specify which fields are going to be public or not
+pub struct Breakfast {
+        pub toast: String,
+        seasonal_fruit: String,
+    }
+enums
 Pub keyword on the enum name alone will do the trick here
 
 Bringing Paths into Scope with the use Keyword
@@ -366,13 +382,16 @@ Use reduces the code we need to write while referring to a path I.e check out co
 use crate::front_of_house::hosting;
     hosting::add_to_waitlist();
 
+Declare use in the scope you’d want to use the imported modules, structs ,functions etc. - declaring use at the top level then trying to use it inside a module wont work since the scope is different.
+Alternatively you can append ‘super::’ before your function, etc to make it accessible
+
 Creating Idiomatic use Paths
 Above you might wonder why we didn’t do this
 use crate::front_of_house::hosting::add_to_waitlist();
 add_to_waitlist();
 It is ideally idiomatic/recommended to call a function with its parent, so that it’s clear where the function comes from. I.e
 hosting::add_to_waitlist();
-When calling other items, I.e structs, enums etc it is advisable to call the whole function name.
+When calling other items, I.e structs, enums etc it is advisable to write the full path in the use statement
 It’s the way people write rust code.
 
 Providing New Names with the as Keyword
@@ -385,6 +404,7 @@ Check the book example
 
 Using External Packages
  To use external package we must define	 the package name in our cargo.toml file and then use the use statement to import the package in our project. e.g  use rand::Rng;
+Std library for example is an external crate to our package but it ships with rust so we don’t need to include it in the cargo.toml file, however to use it we must import it using the ‘use’ keyword.
  use the absolute path to bring in external crates
 
 Using Nested Paths to Clean Up Large use Lists
@@ -438,7 +458,7 @@ NOne- to handle the case of null values
 Hence here Let third:&<I32>=vec.get(2); we can’t use the &(reference) since get will return  Option<&i32> instead of &i32
 Usage of these two depends on your application needs, eg if you access a non existent value with indexing the program will panic, but if you use get  you can handle null cases with None- eg if the index is a user input you can handle a case and ask them to reenter the number again.
 
-In rust you can’t have mutable and immutable reference in the same scope I.elet mut v =vec![1,2,3,4,5];
+As seen we have not listed vec3 are used it, this is because vectors store items next to each other on memory and adding a new element might cause new memory allocation of the vector, as such refernce t the fisrt element or any other, might be referncing a deallocated memory I.e:let mut v =vec![1,2,3,4,5];
 Let first= &vec[0];  
 V.push(6);
  println!("The first element is: {first}");
@@ -455,7 +475,10 @@ To access each item inside the vector we can use for loop to iterate and access 
         println!("{i}");
     }
 For mutable vectors we can modify them by the help of deference operator
-We can use the dereference operator to be able to get the value in I (in the for loop) so that we can mutate the value inside the vector// check GitHub for more
+To change the value that the mutable reference refers to, we have to use the * dereference operator to get to the value in i before we can use the += operator.  let mut v = vec![100, 32, 57];
+    for i in &mut v {
+        *i += 50;
+    }
 
 We normally pass reference to the vector in a for loop because :
 1. The loop would assume ownership of the vector if we did not pass the reference instead- we wouldn’t be able to use the vector again

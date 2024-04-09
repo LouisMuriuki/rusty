@@ -1,3 +1,4 @@
+// no need to add the pub keyword here as the mudules is siblings with the function that will call it.
 mod front_of_house {
     // items inside module are private to that module only unless pub
     pub mod hosting {
