@@ -8,14 +8,14 @@ fn main() {
     let s2 = String::from("There");
     let s3 = s1 + &s2;
     println!("{}", s3);
-    slicing_string();
+    //slicing_string();
     //operation above mmight seems straight forward but its not.
     // The + operator is implemented with this signature:
     // fn add(self, s: &str) -> String {
     // it expects the second argument to be a reference however it takes ownership of self which is the fist argument passed
-    // it then returns the result after append self with the &str
-    //however notice we are trying to pass s2 as &String instead of &str as need in the function signature and the code compiles without any issue?
-    //this is because the compile can coerce &string to &str[..]
+    // it then returns the result after appending self with the &str
+    //however notice we are trying to pass s2 as &String instead of &str as needed in the function signature and the code compiles without any issue?
+    //this is because the compiler can coerce &string to &str[..]
     // this operation is quite efficient as there is no copying involved;
     // it takes owenrdhip of s1 and appends s2 then returns that;
     // we can't use the s1 anymore since owenership was taken

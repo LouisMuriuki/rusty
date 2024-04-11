@@ -467,6 +467,8 @@ Pop-removes and returns the last element
 
 It is not allowed to mutate a vector that is stored on the heap and has been accessed immutably- this tells the compile we are going to perform a read only operation.vector store there value next to each other hence adding a value might lead to memory re-allocation and copying the values if the current doesn’t fit.Hence if we add a new value and try to access your vec we might be accessing a wrong memory hence rust won’t allow you to read the value after you have mutated- program will panic
 
+So far we have used match structs, enums and vectors
+
 Iterating over the Values in a Vector
 
 To access each item inside the vector we can use for loop to iterate and access immutable values
@@ -496,21 +498,27 @@ Text(String)
 Let v =vec![SpreadSheet::Int(4),SpreadSheet::Float(4.87656789),SpreadSheet::Text(String::from(“Slash”)] ;
 
 Dropping a Vector Drops Its Elements
-Like any other struct, a vector Isfreed when it goes out of scopeStoring UTF-8 Encoded Text with Strings
+Like any other struct, a vector is freed when it goes out of scope,so a vector is a struct?
+
+STRINGSStoring UTF-8 Encoded Text with Strings:
 Strings are implemented as a collection of bytes, and has some methods to provide functionality when those bytes are implemented as text.here we will discuss:1. operations on strings that every collection type has I.e creating , updating and reading
 2. How strings are different from other collections, namely how indexing to a string is different namely in differences between how people and machines interpret it.
 What Is a String?
-Rust has only only string type in the core language which is the string slice seen as &strstring slices are usually references to UTF-8 encoded string data stored else where; string literals are stored in the programs binary and therefore are string slices
-
+Rust has only only string type in the core language which is the string slice seen as &strstring slices are usually references to UTF-8 encoded string data stored else where;
+ string literals are stored in the programs binary and therefore are string slices
 String type is provided by the standard library rather than being coded into the language , is a growable, mutable, owned UTF-8 encoded string type 
 Both String type and &str are UTF-8 encoded
 
 Creating a New String
-Many of the operation available for Sting are available for vector; String is implemented as a wrapper around a vectorof bytes with some extra guarantee, restrictions and capabilities
-Eg the new function. String::new() //vec::new()this creates an empty String but often we wan to have some initial data, we can use this:1.to_string()- which is available to any type that implements  the display trait	
+Many of the operation available for Sting are available for vector;
+String is implemented as a wrapper around a vector of bytes with some extra guarantee, restrictions and capabilities
+Eg the new function. String::new() // Vec::new()this creates an empty String but often we wan to have some initial data, we can use this:1.to_string()- which is available to any type that implements  the display trait	
 Let s=“initial text”.to_string();
 2.String::from(“initial_tetx”);which one to choose is unto yourself, style and readability Strings are UTF-8 so they can store symbols,characters, emojis, text, etc.
-Updating a String
+Updating a String1. concatinate with Plus operator (+) - to avoid ownership lose use a reference
+2. concatinate with format!()
+3. Append a string with push_str()- does not take ownership
+4. *Push - works like push_str but only for single characters 
 Just like the vec<T> String can grow and change it contents if you push data into it.you can use the + or the format! to concatenate values
 
 Appending to a String with push_str and push
@@ -524,12 +532,16 @@ Concatenation with the + Operator or the format! Macro
     let s3 = s1 + &s2; // note s1 has been moved here and can no longer be used
 Si is no longer valid and the reason we used a reference to s2-&s2  has to to with the signature of the method called when we use the + operator is usedit looks like :
 fn add(self, s: &str) -> String {
-We can only add &str to String and not String with Stringbut as seen we are trying to add &string to String even though the method signature says &str.this is because rust compiler can  coerce a String into a &str[..]also as add does not take ownership of s we can still use s2.we can also see that add take ownership of self as it does not have a &meaning we can ownership os s1 append a reference to s2 and return the result to s3; this statements looks like we are lots of copying but that is not the case, this is actually more efficient than copying your way into it.Remember above we said strings provide a little more capabilities but also restrictions.
+We can only add &str to String and not String with Stringbut as seen we are trying to add &string to String even though the method signature says &str.this is because rust compiler can  coerce a String into a &str[..]also as add does not take ownership of s we can still use s2.we can also see that add take ownership of self as it does not have a &meaning we can ownership os s1 append a reference to s2 and return the result to s3; 
+this statements looks like we are lots of copying but that is not the case, this is actually more efficient than copying your way into it.Remember above we said strings provide a little more capabilities but also restrictions.
+Format MacroThis makes appending strings much more easier to read and write, especially when concatenating multiple stringsworks exactly like the println! But on this case we return the concatinated stringas seen variables are put in {} which is wrapped by double quote notation
+format!(“{}”);
 
 Indexing into Strings
 If you try to index a string in rust as with other programming languages, you would get an error.
 Rust does not support indexing in string, why not ? Let understand why
 Some characters ins string take more than one byte- usually a letter will take one byte.due to this if we try to access a string value with index, it may lead upto an unexpected behaviour thus rust won’t compile.
+
 Bytes and Scalar Values and Grapheme Clusters! Oh My!
 Another point about UTF8 is that there are three ways to looks at string from rust perspective
 -bytes
@@ -541,7 +553,7 @@ The final reason why indexing is not possible in rust string is because indexing
 Slicing Strings
  As we have seen indexing in rust might result to unexpected behaviour, and is difficult due to the three different type it can be stored as.however if you really need to index you can provide a range instead of  of [] with one number I.e
 let hello = "Здравствуйте";
-let s = &hello[0..4];
+let s = &hello[0..4]; 4th item not included.
 Instead of 
 let hello = "Здравствуйте";
 let s = &hello[4];
@@ -550,15 +562,21 @@ Since as discussed earlier this characters take 2 bytes instead of the	normal I 
 If we were to to try and slice part of a character byte as in using the example abovelet s = &hello[0..1];we’d get a compile error
 Be  careful on how you generate string slices from string to prevent program panicking
 
-Methods for Iterating Over Strings
+Methods for Iterating Over Strings:
 The best way to operate on pieces of  strings is to be explicit on where you want chars or bytes.
 For individual unicode scaler values use the chars method
 Calling chars on  Зд returns the individual values of type char
+For I in LOUis.chars(){
+Println!(“{I}”);
+}
 Alternatively you can use the byte method which returns each raw byte,208,151,208,180
-
+For I in LOUis.bytes(){
+Println!(“{I}”);
+}
 
 Storing Keys with Associated Values in Hash Maps
-HashMap<K, V>store their data on the heap
+This is the typeHashMap<K, V>store their data on the heap
+All keys must have same type as each other.
 Object in JS
 Stores a mapping of keys of type K to values of type V using a  a hashing function, which determines how it places this keys and values into memory
 Hashmaps are useful when you wan to search for data, not by using index as with vectors but by using a key that can be of any type.
@@ -570,7 +588,14 @@ We can create a new hash map by using the new keywordlet mut scores=HashMap::new
 We can use insert to adding elements to the hashmap.
  scores.insert(String::from("Blue"), 10);
 
-Jus like vectors, hashmaps are homogeneous, meaning there keys need to be of the same type and values as well, we can use enums to helps use here, incase we have items of different types we want to store in out hash map
+Jus like vectors, hashmaps are homogeneous, meaning there keys need to be of the same type and values as well, we can use enums to helps use here, incase we have items of different types we want to store in out hash map.
+use std::collections::HashMap;
+
+    let mut scores = HashMap::new();
+
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
+
 
 Accessing Values in a Hash Map
 
