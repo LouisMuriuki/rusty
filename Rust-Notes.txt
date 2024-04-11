@@ -600,24 +600,30 @@ use std::collections::HashMap;
 Accessing Values in a Hash Map
 
 We can get a value out of a hashmap by using the get method.
+
 Let Blue=“Blue”.to_string();
 Let score =scores.get(&Blue).copied().unwrap_or(0);
-The get method returns Option<&V>, if there is no value for that key the method returns  None.
+The get method returns Option<&V>, if there is no value for that key the method returns  None.you could argue we could do a match here as well to handle the same value from get.
 This program handles option by calling .copied to get an Option<i32> type rather than  the Option<&i32>
 Then unwrap_or to set score to zero if scores does not have an entry for the value 
+
 Accessing Hasmap print values in arbitrary  order 
+Just like  in vectors we can iterate over the value of a hashmap as seen:
+for(key,value) in &Hasmap{
+print(“{key}:{value}”);
+}
 
 Hash Maps and Ownership
 For types that implement the copy trait the value is copied, while for owned value like string the values will be moved and the hashmap become the new owner
 When a type implements the Copy trait, it means that values of that type are copied implicitly when they are assigned to another variable or passed to a function.
-This mostly accurate but will help understand: by default all items stored on the heap don’t implement the copy trait, however those who are on the stack do.
+This is mostly not accurate but will help understand: by default all items stored on the heap don’t implement the copy trait, however those who are on the stack do.
 We can do some magic to implement  wrapper to the heap stored items so that they implement the copy trait.
 For type that don’t implement the copy trait, pass reference instead.
 
 Updating a Hash Map
 There are three ways to do it:
 1.Overwriting a Value
-If we add two key values pair contains same name for the key but different values the former will be ignored and the latter be used  as the correct value.
+If we add two key values pair contains same name for the key but different values, the former will be ignored and the latter be used  as the correct value.
 2.Adding a Key and Value Only If a Key Isn’t Present
 Check if key exists , if not add else don’t addthere is a special Api called entry that takes the key you want ot check as a parameter, the return value of entry method is an enum called Entry, that represents a value that might or might not exist.
 scores.entry(String::from(“Blue”)).or_insert(50);since we already have Blue this won’t be inserted.or_insert method on Entry returns a mutable reference to the value for the corresponding entry key if that key exists and if not, insert the parameter as the corresponding value for this key and return the reference to this new value.
@@ -627,3 +633,4 @@ The split_whitespace method returns an iterator of string slices that are sub-
 
 Hashing Functions
 by default hash maps contain a hashing function called SipHash that can provide resistance to denial of service attacks involving hash tablesit is slower but offers better security, you can swap it out in favour of your own choice that is faster by specifying a different hasherHasher is a type that implements the BuildHasher trait.
+Error Handling

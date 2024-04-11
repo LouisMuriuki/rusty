@@ -1,25 +1,25 @@
 use std::collections::HashMap; // not included in prelude so must import
 fn main() {
-    let mut scores = HashMap::new();
+    // let mut scores = HashMap::new();
 
-    let selectedTeam = "Blue".to_string();
-    println!("Hello, world!");
-    scores.insert("Team A".to_string(), 20);
-    scores.insert("Blue".to_string(), 40);
-    scores.insert("Team C".to_string(), 50);
+    // let selectedTeam = "Blue".to_string();
+    // println!("Hello, world!");
+    // scores.insert("Team A".to_string(), 20);
+    // scores.insert("Blue".to_string(), 40);
+    // scores.insert("Team C".to_string(), 50);
 
-    println!("{:?}", &scores);
+    // println!("{:?}", &scores);
 
-    // copied here will copy the variable so long as it has the copy trait else it will take ownership, we can use refernce to counter that
-    let score = scores.get(&selectedTeam).copied().unwrap_or(0); //copied will change option<&T> to Option<T> get will return Option<&T>
+    // // copied here will copy the variable so long as it has the copy trait else it will take ownership, we can use refernce to counter that
+    // let score = scores.get(&selectedTeam).copied().unwrap_or(0); //copied will change option<&T> to Option<T> get will return Option<&T>
                                                                  //unwrap_or- will return value of key if it exits else return new value passed to key
                                                                  // -this can be alternative to match pattern
 
-    println!("{:?}", score);
+    // println!("{:?}", score);
 
-    iterateHashMaps(scores);
-    hashmap_overwrite();
-    hashmap_checkif_exists();
+    // iterateHashMaps(scores);
+    // hashmap_overwrite();
+    // hashmap_checkif_exists();
     count_word();
 }
 
@@ -55,8 +55,8 @@ fn count_word() {
     const TEXT: &str = "Hello World Wonderful World";
     let mut map = HashMap::new();
     for word in TEXT.split_whitespace() {
-        let count = map.entry(word.to_string()).or_insert(0); // count refere to a mutable refernce to the corresponding Entry Key
-        *count += 1;// since count is a refernce any change that occurs to it will affect our originall value
+        let count = map.entry(word.to_string()).or_insert(0); // count refers to a mutable refernce to the corresponding Entry Key
+        *count += 1;// since count is a refernce to a value in the hashmap any change that occurs to it will affect our original value
     }
-    println!("{:#?}", map);
+    println!("{:#?}", map); // here map will contain the new values.
 }
