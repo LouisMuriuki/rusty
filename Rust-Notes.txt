@@ -662,4 +662,4 @@ greeting_file = match greeting_file_result {
 Ok(file)=>file,Err(error)=>panic!(“Problem opening file{:?}”,error),
 }In the match expression arm note we have not used Result::Ok or Result::Err. `this is because just like the Option enum Result is included directly in the prelude.Matching on Different Errors
 
-The code above will panic
+The code above will panic not matter why File::open failedhowever we want to take different action for different failure reasons.if the file doesn’t not exist we can to create a file and return the handle to the new file, else let the program panic.to do so we can add an inner match expression.refer to could_fail_handle_multiple fn in GitHubShortcuts for Panic on Error:unwrap and expect
