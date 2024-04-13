@@ -604,7 +604,7 @@ We can get a value out of a hashmap by using the get method.
 Let Blue=“Blue”.to_string();
 Let score =scores.get(&Blue).copied().unwrap_or(0);
 The get method returns Option<&V>, if there is no value for that key the method returns  None.you could argue we could do a match here as well to handle the same value from get.
-This program handles option by calling .copied to get an Option<i32> type rather than  the Option<&i32>
+This program handles option by calling .copied() to get an Option<i32> type rather than  the Option<&i32>
 Then unwrap_or to set score to zero if scores does not have an entry for the value 
 
 Accessing Hasmap print values in arbitrary  order 
@@ -625,7 +625,7 @@ There are three ways to do it:
 1.Overwriting a Value
 If we add two key values pair contains same name for the key but different values, the former will be ignored and the latter be used  as the correct value.
 2.Adding a Key and Value Only If a Key Isn’t Present
-Check if key exists , if not add else don’t addthere is a special Api called entry that takes the key you want ot check as a parameter, the return value of entry method is an enum called Entry, that represents a value that might or might not exist.
+Check if key exists , if not add else don’t addthere is a special Api called entry that takes the key you want to check as a parameter, the return value of entry method is an enum called Entry, that represents a value that might or might not exist.
 scores.entry(String::from(“Blue”)).or_insert(50);since we already have Blue this won’t be inserted.or_insert method on Entry returns a mutable reference to the value for the corresponding entry key if that key exists and if not, insert the parameter as the corresponding value for this key and return the reference to this new value.
 Updating a Value Based on the Old Value
 Look up keys value, then update it based on the old value,
@@ -633,4 +633,33 @@ The split_whitespace method returns an iterator of string slices that are sub-
 
 Hashing Functions
 by default hash maps contain a hashing function called SipHash that can provide resistance to denial of service attacks involving hash tablesit is slower but offers better security, you can swap it out in favour of your own choice that is faster by specifying a different hasherHasher is a type that implements the BuildHasher trait.
-Error Handling
+Error Handlingrust has a panic macro - when a program panic it will print a failure message, unwind , clean up the stack and quit.Via an env variable you can make rust display the call stack when a panic occurs to make it easier to track down the source of the panic.
+By default when program panic rust will unwind which means rust walks back up the stack and cleans data from each function it encounters,however walking back and cleaning up is a lot of work therefore rust gives you the opportunity of aborting instead-this however won’t clean up the stack.Memory that the program was using will then need to be cleaned by the operating system.
+If in your project you need to make the resulting binary as small as possible you can switch from unwinding to aborting by addingpanic=‘abort’ to the appropriate profile sections in your cargo.toml file eg
+[profile.release]panic= ‘abort’
+
+Using a panic Backtrace
+
+When a rust program panics, the last two lines are the most important, one shows where our program panicked and the next is a note that tells us to run with env variable RUST_BACKTRACE=1 to display a backtrace.A backtrace is a list of all functions that have been called to get to this point.
+The key to reading a backtrace is to start from the top until you see the files that you wrote, that’s the spot where the problem originatedthe lines above the spot are code that your code has called, the lines below are code that called your code.this after and before code lines might include rust code, etc lib code, crates code etc.to run a program with backtrace, we call our code as shown RUST_BACKTRACE=9 cargo run
+ This will print a stack trace and we should start investing our panic a the first line we see that we wrote.the backtrace exact output will depend on the os and rust version you re using.in order to get backtraces with all this information, debug symbols must be enabled, by default debug symbols are are enabled when we run cargo run /cargo build without the release flag.
+Recoverable Errors with Result
+Most errors are not serious enough to require a program to panic.i.e you want to access a file but it does not exist, it does not make sense to panic but rather create the missing instead.
+The Result enum has two variants , Ok and Error as follows
+enum Result<T, E>{Ok(T),
+Err(E)
+}
+
+The T and E are generic type parameters:T will return the type of value that will be returned in a success case within the Ok variant.E will return the type of Error that will be returned in a failure case within the Error variant.
+Because Result has these generic type parameters, we can use the Result type and the functions defined on it in many different situations where the successful value and error value we want to return may differ.Example of a function that return result type because the function could fail:use std::fs::File;
+
+fn main() {
+    let greeting_file_result = File::open("hello.txt");
+}
+In the case where File::open succeeds, the value of greeting_file_result will be an instance of Ok that contains a file handle, in the case where it fails  the greeting_file_result variable will contain an instance of the Err that has more information about the error.One way to handle the Result type is by using the match expression just like we do for Option<T>
+
+greeting_file = match greeting_file_result {
+Ok(file)=>file,Err(error)=>panic!(“Problem opening file{:?}”,error),
+}In the match expression arm note we have not used Result::Ok or Result::Err. `this is because just like the Option enum Result is included directly in the prelude.Matching on Different Errors
+
+The code above will panic

@@ -55,8 +55,49 @@ fn count_word() {
     const TEXT: &str = "Hello World Wonderful World";
     let mut map = HashMap::new();
     for word in TEXT.split_whitespace() {
-        let count = map.entry(word.to_string()).or_insert(0); // count refers to a mutable refernce to the corresponding Entry Key
-        *count += 1;// since count is a refernce to a value in the hashmap any change that occurs to it will affect our original value
+        let count = map.entry(word.to_string()).or_insert(0); // count refers to a mutable refernce to the corresponding value of the Key
+        *count += 1; // dereference the mutable reference so as to avoid an invalid pointer 
+        // since count is a refernce to a value in the hashmap any change that occurs to it will affect our original value
     }
     println!("{:#?}", map); // here map will contain the new values.
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fn count_words() {
+    let word="hello world wonderful world";
+    let mut my_map=HashMap::new();
+
+    for i in word.split_whitespace(){
+        let count=my_map.entry(i).or_insert(0);
+        *count+=1;
+    }
+
+    println!("{:#?}",my_map);
+
+    
 }
