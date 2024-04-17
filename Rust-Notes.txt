@@ -663,3 +663,47 @@ Ok(file)=>file,Err(error)=>panic!(“Problem opening file{:?}”,error),
 }In the match expression arm note we have not used Result::Ok or Result::Err. `this is because just like the Option enum Result is included directly in the prelude.Matching on Different Errors
 
 The code above will panic not matter why File::open failedhowever we want to take different action for different failure reasons.if the file doesn’t not exist we can to create a file and return the handle to the new file, else let the program panic.to do so we can add an inner match expression.refer to could_fail_handle_multiple fn in GitHubShortcuts for Panic on Error:unwrap and expect
+Using match works but it can be a bit verbose and not communicate intent well
+Result<T,E> has got various helper methods to help it accomplish  a specific task.
+Unwrap method is a shortcut for the match expression, 
+If the Result is the Ok variant, then unwrap will return value inside the Ok.
+If the Result is the Err variant , unwrap will call the panic! Macro.
+
+Expect.expect works same as un_wrap but you have the option to specify the message passed once a panic happens unlike .un_wrap which has got a default error message
+Propagating Errors
+When a functions implementation calls something that might fail, instead of handling the error within the function itself, you can return the error to the calling code, so that it can decide what to do.- Propagating the errorit give more control to the calling code, where there might be more information or logic that dictates how the error should be handled than what you have available in the context of your code
+Below is a function that reads a username from a file, if the file does not exist, the function returns the error to the code that called it:
+~ Refer to propagating Errors in GitHub.
+The calling code will then handle the Ok or Err variants respectively.
+I.e in case of Err: it can panic, teach name from other file, or set a default username.
+This procedure in rust is so common that Rust provides the Question mark operator to make this easier.
+
+Shortcut for Propagating Error : The ? Operator
+The ? Placed after a result value is defined to work in almost the same way as the match expression  we defined to handle Result above:if the result is an Ok, the value inside the Ok will get returned from this expression, else the value inside Err will get returned and propagate to the calling code and terminate the program.
+One difference though between ? Operator and match is that 
+Error values that have the ? Operator called on them , go through the from function defined in the From trait in the std lib.
+It is used to convert values from one type into another type.
+When the ? Operator calls the from function, the error type received is converted into the error type defined in the return type of the current functionThis is useful when a function returns one type to represent all the ways a function might fail, even if parts might fails for many different reasons.As seen the ? Operator is useful in eliminating boilerplate and makes this function implementation simpler.We can even make our code shorter by chaining  the methods calls immediately after the ? Operator
+Refer to GitHub on how to chain operators.Where the ? Operator can be used
+The ? Operator can only be used in functions whose return type is compatible with the value of the ? Is used onthis is because the ? Operator is designed to perform an early return of a value out of the function.
+Basically we can only use the ? Operator in function whose return type is either Result, Option on any type that implements the FromResidual.
+The behaviour of  the ? Operator when Called on Option<T> is the same a Result<T,E>  if None() is returned the function will have early exit , if some() the value inside the some will be the resulting value of the expression
+We can use ? Operator on a Result if the  function returns a Result, likewise we can use the ? Operator on an Option if the function returns an Option., but we cannot mix and match, as the ? Operator won’t convert result to Option and vice versea.
+
+In such cases where such conversion is necessary we can use methods like Ok on result or the ok_or method on Option to do the conversion explicitly.
+Main fn in Rust is the entry and exit point of an executable program, and hence there are restriction on what it can return.
+~As seen from previous example it returns () only , and this is because there are restricions on what it’s return type can be to enable programs behave as expected.Luckily main can also return  a  Result<(), E> 
+See below code where we change return type to be Result<(), Box<dyn Error>> and we added a Ok(()) at the enduse std::error::Error;
+use std::fs::File;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let greeting_file = File::open("hello.txt")?;
+
+    Ok(())
+}
+ The Box<dyn Error> type is a trait object which for now you can read as “any kind of Error” until we learn about in chapter 17.
+When a main function returns a Result<(),E> , The executable will exit with a value of ) if main returns Ok(()) and will exit with nonzero value if main returns an Err value.in C executables return integers when they exit; programs that exit successful return 0  while those that  error, return with any other integer 
+Rust also follows this convection.
+
+
+To Panic or not To panic
