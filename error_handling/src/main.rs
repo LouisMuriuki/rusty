@@ -1,3 +1,4 @@
+use std::net::IpAddr;
 use std::{
     fs::{self, read_to_string, File},
     io::{self, ErrorKind, Read},
@@ -89,7 +90,7 @@ fn read_from_file_godmode() -> Result<String, io::Error> {
 }
 
 // etrun type is Option<T> because there are chances the character is there or not
-fn find_lastcharacter_of_first_line(text: &str) -> Option<char> { 
+fn find_lastcharacter_of_first_line(text: &str) -> Option<char> {
     text.lines().next()?.chars().last()
     //.lines -returns an iterator over the lines in the string.
     //.next - Because this function wants to examine the first line, it calls next on the iterator to get the first value from the iterator
@@ -97,4 +98,10 @@ fn find_lastcharacter_of_first_line(text: &str) -> Option<char> {
     // if text is not an empty string next will return a some value containg a string slice of the first line in the text.
     // we can now call chars to get an iterator of the String slice.
     // we then call last to return the last item in the iterator.
+}
+
+fn dummy_compiler() {
+    let home: IpAddr = "127.0.0.1"
+        .parse()
+        .expect("Please enter a valid Ip Address");
 }

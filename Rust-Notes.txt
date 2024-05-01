@@ -703,7 +703,93 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
  The Box<dyn Error> type is a trait object which for now you can read as “any kind of Error” until we learn about in chapter 17.
 When a main function returns a Result<(),E> , The executable will exit with a value of ) if main returns Ok(()) and will exit with nonzero value if main returns an Err value.in C executables return integers when they exit; programs that exit successful return 0  while those that  error, return with any other integer 
-Rust also follows this convection.
+Rust also follows this convection.To Panic or not To panic
+
+You can call panic for any error situation, however by doing this you are making a decision on behalf of the calling code whether the error is recoverable or not.You could choose to return a Result value to give the calling code options	: hence it calls panic only when the Err valuee is unrecoverable.
+In most situations we would return Result to the calling code, but in situations like as examples, prototype-codes and tests it is advised to panic instead.Examples, Prototype Code, Tests  
+
+Including robust error handling in examples can lead to the examples being unclear. for example you might find methods like unwrap that could cause the function to panic being used as placeholder for a more robust error handling technique I.e match.so you might use unwrap and expect when prototyping	and then come up later with better error handling techniques.similar when doing tests youd want when a call to a method fails the whole function to fail even if that particular method is not what you were testing for. Hence calling unwrap and or expect is exactly what you should use.Cases in Which you have More information than the compiler
+
+In some situations, you can have a logic that returns a Result value even though it is not logically possible for the logic to return an error.The compiler will force you to handle the Error even though is not there, because it thinks the logic has the possibility of failing.
+In such situations, its perfectly acceptable to call unwrap and even better have expect to document why the error is failing
+Consider code below:    use std::net::IpAddr;
+
+    let home: IpAddr = "127.0.0.1"
+        .parse()
+        .expect("Hardcoded IP address should be valid");
+
+127.0.0.1 is  a valid Ip address.
+We can see that  we are parsing a hardcoded valid ip address but the will force to handle the Err variant of Result by either asking us to add expect or unwrap because the hardcoded value doesn’t change the type of the parse method.consider a situation where we are accepting the ip address as an input from the user, then our code would make much more sense to have expect  or unwrap since the user input be wrong.Guidelines for Error Handling
+It advisable to have you code panic when it’s possible your code could end up in a bad state.A bad state is when some assumption, guarantee or contract has been brokenAlso:1 BadState- is when something that is unexpected happens as opposed to something that will likely happen occasionally, like a user entering data in the wrong format.
+If someone calls your code and passes values that don’t make sense it is advisable to return an error so that the user of the library can decide what do in that case.in situations where continuing would be harmful or insecure, the best choice would be to panic and alert the user of you lib about the error so they can make the necessary fix.Similarly if you calling external code and  it returns an invalid state that you have no way to fix, calling panic is the best situation here.
+If you attempt to access an invalid data:Out of bounds memory- trying to access memory that doesn’t belong to the current data structure will cause the standard library to call panic, this protects from vulnerabilities.(accessing invalid data is the main cause of vulnerability)
+However when failure is expected, it is better to return a Result than to make a panic call.
+Example is a parser being given malformed data or a https request returning a status suggesting we have hit a rate limit. In such cases we propagate the error to the code calling it to decide how it will handle it
+Functions have contracts: their behaviour is only guaranteed only when the inputs meet a particular requirement.contract violation indicates a caller side bug and its not the kind of error you want the calling to handle, in fact the is not reasonable way for the calling to recover.
+It makes sense to panic when a contract violation occurs.
+
+The rust type system does lots of the checks hence we do not need to manually do the check our selves. How? Well the parameters are typed no. if you pass other type rather than option the code knows it does not have to handle a value which can  something and nothing rather than the specified type.
+Again if you u32, this ensure what integer is passed is never negative.
+Creating Custom  Types for Validation
+
+We might have a program with a function that expects a number but we want it to be btw 1-100 of cos we can write an if statement to check for this condition.
+Now assume that the program, has lots of function that need to do the same checks, ofcos we can write the check for every program  but this would be a bit hard on the performance  of our app.
+
+An ideal solution for this would be to implement a custom type and put the validation in a function to create a new instance of the type rather than repeating validations everywhere.
 
 
-To Panic or not To panic
+GenericsTypes, Traits and lifetimes
+
+We use generics to create definitions of of function signatures or structs, which we can then use with many different concrete datatypes.	
+Generics in Functionsfor example assume you have a two functions to check the largest value in an integer list and as well as in a char list, we will two function since the type software this values will be different I.e [i32] and [char]Now instead of the function we can use generics and have only one function that accepts a generic datatypeswe must first define the type name declaration in between the function name and  parameter list.refer to code.
+In structure Definition
+We use generic in structs just as we use them in functions I.e
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+Let tranform= Point {x:5,y:2}
+However this means that when creating an instance of the struct, the datatype of the values must be of the same type since the struct definition is generic over some type T. So if x is i32 then y must  be i32 as well.however	incase you want the values of your structure instance to be of different type that is still possible as shown 
+struct Point<T, U> {
+    x: T,
+    y: U,
+}
+
+refer to code.
+However if you find that your code requires a lot of generic type definition then that is an indicator that you should restructure your code.
+
+In Enum Definitions	Enums can also hold generic datatypes in their variants,i.e 
+enum Option<T>{
+Some(T),
+None
+}T is a generic type for the Option<T> enumSome(T) variant holds the value of T while None Variant doesn’t;t hold any value.
+
+Enum can have multiple generics as well I.e Result enum
+enum Result<T,E>{	Ok(T),        Err(E)
+} 
+
+In Method Definitions
+
+We can  implement methods on structs and enums and use generics for their type definitions.
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Point<T> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+}
+
+fn main() {
+    let p = Point { x: 5, y: 10 };
+
+    println!("p.x = {}", p.x());
+}
+
+Note that we have to declare T just after impl so we can use T to specify that we’re implementing methods on the type Point<T>
+Refer to multiple_generics in GitHub to understand more on generics.Performance of Code Using Generics
+Generics don’t relly affect the runtime speeds of your code due to monomorphization of the code.this is the process of turning generic types to concrete types that are used when compiled
+
