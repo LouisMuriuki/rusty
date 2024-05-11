@@ -740,8 +740,13 @@ An ideal solution for this would be to implement a custom type and put the valid
 
 GenericsTypes, Traits and lifetimes
 
-We use generics to create definitions of of function signatures or structs, which we can then use with many different concrete datatypes.	
-Generics in Functionsfor example assume you have a two functions to check the largest value in an integer list and as well as in a char list, we will two function since the type software this values will be different I.e [i32] and [char]Now instead of the function we can use generics and have only one function that accepts a generic datatypeswe must first define the type name declaration in between the function name and  parameter list.refer to code.
+We use generics to create definitions of a function signatures or structs, which we can then use with many different concrete datatypes.	
+
+Why generics?prevents code duplication,
+Makes code more flexible
+Provides more functionality to callers of our code.
+
+Generics in Functionsfor example assume you have a two functions to check the largest value in an integer list and as well as in a char list, we will combine the two functions to a single function that uses generics, since the type software this values will be different I.e [i32] and [char]Now instead of the function we can use generics and have only one function that accepts a generic datatypeswe must first define the type name declaration in between the function name and  parameter list.refer to code.
 In structure Definition
 We use generic in structs just as we use them in functions I.e
 struct Point<T> {
@@ -759,7 +764,7 @@ struct Point<T, U> {
 refer to code.
 However if you find that your code requires a lot of generic type definition then that is an indicator that you should restructure your code.
 
-In Enum Definitions	Enums can also hold generic datatypes in their variants,i.e 
+In Enum Definitions	Enums can also hold generic datatypes in their variants, i.e 
 enum Option<T>{
 Some(T),
 None
@@ -790,6 +795,88 @@ fn main() {
 }
 
 Note that we have to declare T just after impl so we can use T to specify that we’re implementing methods on the type Point<T>
-Refer to multiple_generics in GitHub to understand more on generics.Performance of Code Using Generics
+refer to multiple_generics in GitHub to understand more on generics.
+This means that the method will be available to any instance of the structure no matter the type passed.
+One thing though, we can have a method that will only work with instance of the struct of a certain type only by specifying the type in the method definition.impl Point<f32> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+}Performance of Code Using Generics
 Generics don’t relly affect the runtime speeds of your code due to monomorphization of the code.this is the process of turning generic types to concrete types that are used when compiled
+
+Traits: Defining Shared Behavior
+A trait defines functionality a particular type has and van share with other types,Types behaviour consists of the methods we can call on that type.
+Different types share the same behaviour if we call the same methods on all of those types.trait definitions are a way to group method signatures together to define a set of behaviours necessary to accomplish some purpose.
+ Trait example 
+
+pub trait summary{fn summariza(&self)->String;
+}
+
+Make the triait public so as to make it accessible so crates depending on this crate can access to as well,
+Declare trait with trait keyword followed by its name followed by curly brackets.Inside curly brackets declare the method signatures that describe the behaviours of  the type that implements this trait, we won’t have the function body instead	 a semicolon.Each type that implements this trait, must provide its own custom behaviour for the body of the function.A trait can have multiple methods on its body : the method signatures are listed one per line and each line ends in a semicolon.
+
+Implementing a Trait on a Type
+Check GitHub.
+
+Trait -type restrictions:
+
+Note :We can implement std lib traits like Display on our own custom types 
+We can use our own traits on external typeswe can’t implement external traits on external types.
+This is enforced by the Orhan rule, this ensures other people code doesn’t break your own and vice versa
+Default Implementations
+Sometimes it’s useful to have default behaviour for some or all of the methods in a trait instead of requiring implementations for all methods on every type.here we define the struct, define a trait and the method inside it(including body) then implement the trait on the structure, the implementation block will be empty 
+Create an instance of the structure and call the method inside the trait implementing the struct
+
+Traits as Parameters
+We can use traits to define functions that accept many different types.
+
+Notify function  calls the summarise method on its Item parameter  which is of some type that implements the summary trait.// refer to GitHub for definition of below variable you don’t understand run the code on an instance of the summary Struct otherwise the code won’t compile.
+
+pub fn notify(item: &impl Summary) {
+    println!("Breaking news! {}", item.summarize());
+}
+
+Trait Bound Syntax
+
+The impl trait syntax works for straightforward cases but is actually syntax sugar for a longer form known as trait bound; it looks like this:
+we place the trait Bound inside the angle brackets after a colon after the generic type parameter.
+pub fn notify<T: Summary>(item: &T) {
+    println!("Breaking news! {}", item.summarize());
+}
+//seems familiar? Generics.we can have two parameters that implement summary as shown pub fn Notify(item1:&impl Summary, item2:&impl Summary){}
+Clearly the impl trait is the easiest however incases as below where we want to force the two parameters to have same type,the trait bound might be the best option(using the impl trait is okay as well if you want the parameters to be of different types however they should implement the Summary trait.)
+Pub fn Notify<T:Summary>(item1:&T,item2:&T){
+}Specifying Multiple Trait Bounds with the + Syntax
+Say we wanted notify to use display formatting as well as summarise on Item.we can specify this with  +syntax:
+pub fn notify(item: &(impl Summary + Display)) {}
+we can also use the +syntax with trait bound as such:pub fn notify<T:Display+Summary>(item:&T){}Clearer Trait Bounds with where Clauses
+Using too many traits has a downside,Each generic has its own trait bound , so function with multiple generic parameters can contain lots of trait bounds information between  the functions name and its parameter list making function hard to read.
+Rust provides a syntax we can specify trait bounds inside a  where clause after the functions signature. So instead of writing
+fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {
+
+We can write :
+fn some_function<T, U>(t: &T, u: &U) -> i32
+where
+    T: Display + Clone,
+    U: Clone + Debug,
+{
+
+Less clutteredReturning Types that Implement Traits
+
+We can also use the impl trait syntax  in the return position to return a value of some type that implements a trait 
+fn returns_summarizable() -> impl Summary {
+    Tweet {
+        username: String::from("horse_ebooks"),
+        content: String::from(
+            "of course, as you probably already know, people",
+        ),
+        reply: false,
+        retweet: false,
+    }
+}
+ This means that the fn returns a Tweet of some type that implements summary trait without naming the concrete type.
+
+Using Trait Bounds to Conditionally Implement Methods
+by using a trait bound with impl block that uses generic type parameters, we can implement methods conditionally for types that implement the specified traits.
+
 
