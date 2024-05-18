@@ -21,7 +21,7 @@ pub trait Summary{
 
 pub trait SummaryAuthor{
     fn summarize_author(&self)->String{  //summarize_author has default implementation 
-        format!("@{}", self.author)
+        format!("{}", self.author)
     }
 }
  // no need to pass the function signature and body just specify the impl block-
@@ -42,5 +42,20 @@ fn main() {
 
    println!("Author is  {}", article.summarize_author());
 
-   
 }
+
+// item is of a type that impl the Summary trait
+ fn func (item:&impl Summary)->i32{}
+
+ // can also be wriiten as 
+ fn same_func <T: Summary>(item:&T)->i32{}
+
+ // multiple traits
+ fn func (item:&impl Summary+Clone)->i32{}
+ 
+ fn multi_traits <T:Display+Clone, U:Display+Clone>(t:&T, u:&U){}
+
+  // where clause multiple traits
+ fn some_func <T,U>(t:&T, u:&U)->String where T:Display+Clone, U:Display+Clone{
+
+ }

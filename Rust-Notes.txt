@@ -805,7 +805,7 @@ One thing though, we can have a method that will only work with instance of the 
 Generics don’t relly affect the runtime speeds of your code due to monomorphization of the code.this is the process of turning generic types to concrete types that are used when compiled
 
 Traits: Defining Shared Behavior
-A trait defines functionality a particular type has and van share with other types,Types behaviour consists of the methods we can call on that type.
+A trait defines functionality a particular type has and van share with other types,A way of grouping types together by the methods we call on them*Types behaviour consists of the methods we can call on that type.
 Different types share the same behaviour if we call the same methods on all of those types.trait definitions are a way to group method signatures together to define a set of behaviours necessary to accomplish some purpose.
  Trait example 
 
@@ -824,7 +824,7 @@ Note :We can implement std lib traits like Display on our own custom types
 We can use our own traits on external typeswe can’t implement external traits on external types.
 This is enforced by the Orhan rule, this ensures other people code doesn’t break your own and vice versa
 Default Implementations
-Sometimes it’s useful to have default behaviour for some or all of the methods in a trait instead of requiring implementations for all methods on every type.here we define the struct, define a trait and the method inside it(including body) then implement the trait on the structure, the implementation block will be empty 
+Sometimes it’s useful to have default behaviour for some or all of the methods in a trait instead of requiring implementations for all methods on every type.here we define the struct, define a trait and the method inside it(including body) then implement the trait on the struct, the implementation block will be empty 
 Create an instance of the structure and call the method inside the trait implementing the struct
 
 Traits as Parameters
@@ -878,5 +878,117 @@ fn returns_summarizable() -> impl Summary {
 
 Using Trait Bounds to Conditionally Implement Methods
 by using a trait bound with impl block that uses generic type parameters, we can implement methods conditionally for types that implement the specified traits.
+Example:
+use std::fmt::Display;
+
+struct Pair<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Pair<T> {
+    fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+}
+
+impl<T: Display + PartialOrd> Pair<T> {
+    fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x);
+        } else {
+            println!("The largest member is y = {}", self.y);
+        }
+    }
+}
 
 
+Validating References with Lifetimes
+
+Ensures that references are valid for as long s we need them.
+Are implicit and referred.
+Layman’s understanding:The one with the shorter lifetime cannot be assigned the one with the longer lifetime-refer to the books illustration and code
+
+Generic Lifetimes in Functions
+
+// when using references as parameters rust needs to ensure that the reference returned is valid
+// in this case rust does not know whether the returned reference is text1 or text2 and how it relates to the two
+// hence we need to use a lifetimes
+
+fn the_longest(text1:&str,text2:&str)->&str{
+    if text1.len()>text2.len() {
+        return text1
+    }else{
+        return text2
+    }
+
+}
+
+Lifetime Annotation Syntax
+
+Lifetimes annotations don’t change how long the references live rather, they describe the relationship of the lifetimes of multiple references to each other without affecting the lifetimes.
+
+Refernce->apostrophe->space->apostrophe type
+
+& i32 - a reference
+&’a i32 - a reference with explicit lifetime 
+&’a mut i32 - a mutable reference with explicit lifetime 
+
+One lifetime annotation does not have much meaning by itself because annotations are meant to tell rust how generic lifetimes parameters of multiple  references relate to each other.
+
+Lifetime Annotations in Function Signatures
+
+We want the returned reference to be valid as long as the two parameters  are valid..
+
+We declare generic lifetime parameters in angle brackets just as we did for generic type parameters
+
+fn the_longest<‘a>(text1:&’a str,text2:&’a str)->&’a str{
+    if text1.len()>text2.len() {
+        return text1
+    }else{
+        return text2
+    }
+
+}
+This means that the function takes two parameters  which live at least as long as lifetime ‘a.
+In practise it means the lifetime of the returned reference is the same as the smaller of the lifetimes of the str referencesto understand above  check code below:fn main() {
+    let string1 = String::from("long string is long");
+
+    {
+        let string2 = String::from("xyz");
+        let result = longest(string1.as_str(), string2.as_str());
+        println!("The longest string is {}", result);
+    }
+}
+
+Result reference something that is valid until the end of the inner scope.
+
+Thinking in Terms of Lifetimes
+Lifetimes parameters needs to be related for them to work. 
+It all about connecting the reference parameters of a function and the return reference as well
+
+
+Lifetime Annotations in Struct Definitions
+ Structs define owned types but with lifetimes we can define references as well.we would need to add lifetime annotations on every reference in the struct.
+
+Struct Anotation{
+Really: &’a str,
+}
+Lifetime Elision
+Lifetimes on function or method parameters are called input lifetimes, and lifetimes on return values are called output lifetimes.
+By default the compiler can add lifetimes annotation for us hence we don’t really need to specify lifetime annotation in some function signaturehowever note there are 3 rules that the compiler uses to do this and sometimes the rules might not apply hence the compiler will throws errors in order to give us the opportunity to write the lifetime annotations ourselves.
+
+For example you donthave to annotate a parameter if it’d not related  in anyway to the return referencethere are other rules check them out, it good to know them.(they are mostly used by compiler)
+
+Lifetime Annotations in Method Definitions
+
+impl<'a> Annotation<'a> {
+    fn level(&self) -> i32 {
+        3
+    }
+}
+
+The Static Lifetime
+
+One special lifetime we need to discuss is 'static, which denotes that the affected reference can live for the entire duration of the program.
+let s: &'static str = "I have a static lifetime.";
