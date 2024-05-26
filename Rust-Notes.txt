@@ -992,3 +992,115 @@ The Static Lifetime
 
 One special lifetime we need to discuss is 'static, which denotes that the affected reference can live for the entire duration of the program.
 let s: &'static str = "I have a static lifetime.";
+
+
+
+How to Write Tests
+
+Functions that verify non-test code works as expected.rust test features
+1.test attribute,
+2 macros,
+3. Should_panic attribute.
+
+The Anatomy of a Test Function
+1. assert! - test macro to check if some conditionn evaluates to true. 
+Eg assert!(6>4)
+2. assert_eq! - test macro to check for equality in the results
+Eg assert_eq!(result,40) result here is expected to be 40.
+Order of the left and right don’t matter
+3. assert_ne! - test macro to check for inequality in the results (pass is vales unequal)
+Order of the left and right don’t matterwhen the assertion fails this macros print their arguments using the debug formatting which means values compared must implement the PartialEq and Debug traits
+All primitive types and most of the std library implements this.For structs and enums that you define yourself you’ll need to implement partialEq to assert  equality of those types.You’ll also need to implement Debug  to print the values when assertion fails.
+Quite straightforward though:
+#[derive(PartialEq, Debug)]
+
+Adding Custom Failure Messages
+Custom messages will help you further understand more when your assertion fails, what the problem might be
+Any arguments passed after the required arguments will be passed along with the format macro!
+Check GitHub for more.
+ assert!(greetings("Louis").contains(name),"Greetings did not contain name,value was `{}`",greetings(name));since name is something else other than Louis this test will fail and the assert will print the extra output
+
+
+Checking for Panics with should_panic
+In addition to checking return values it’s important to check that our code handles error conditions as expected.
+The test passes if the code inside the fn panics and the test fails if the code inside the function don’t panic
+#[test]
+#[should_panic]
+fn greater_than_100() {
+        Guess::new(200);
+    }
+should_panic should be after the test attribute and before the function.
+Should panic in sometimes not precise as the text will pass whenever the code panic regardless of the reason- we should try to make it as precise as possible.
+Check GitHub for full code
+
+Using Result<T, E> in Tests
+You can’t use the should_panic attribute when using Result<T, E>
+
+Controlling How Tests Are Run
+Cargo test compiles into a resulting test binary.By default the test are run in  parralel, but we can control the behaviour of this tests using command line optionssome options are passed to cargo test before the binary and other are passed to the binarywe separate the two using a separator I.ecargo test  -- help -shows the options you can pass to cargo test.cargo test -- -- help - shows the options you can pass to the resulting binary
+
+Running Tests in Parallel or Consecutively
+By default in parallel using threads
+However you must ensure that the test s don’t depend on each other, including shared environment, such as current working directory or environmental variables.
+To prevent parallel test we can specify the test to run on a single thread as shownI.e cargo test -- -- test-threads=1
+
+Showing Function Output
+ If a test contains a println! And the test passes, we won’t see the println statement however if the test fails the we will see the println output in the terminal
+If we wan the println output to be displayed during the passed test we can add
+
+Cargo test -- -- show-output.
+
+Running a Subset of Tests by Name
+Running Single Tests
+
+Cargo test name of the test
+
+Filtering to Run Multiple Tests
+Say you have a couple test starting with the keyword add I.e (add_two, add_five , etc) you can just say cargo test add and all the test with add at the start will run.
+Cargo test addif you want to run all test in a particular module, just specify the name of the module after cargo test
+Cargo test main
+
+Ignoring Some Tests Unless Specifically Requested
+Some tests might be alittle bit time consuming hence we might not want tot run themwe can add the #[ignore] attribute after the #[test] attribute
+
+To run the ignored test we use :cargo test -- -- ignored
+
+
+Test Organization
+
+Two categories of test  
+1. Unit test- smaller at particular to one module at a time, can test private interfaces
+2. Integration tests. External to your library and use your code like any other external code, using only public interface and multiple modules at a time.
+
+Unit Tests
+Test each unit of code in isolation to determine where the code is not working as expected.
+Put the unit test in each file together with the code they are testing.
+ The convention is to create a module named tests in each file to contain the test function and annotate the module with  #[cfg(test)]
+
+The Tests Module and #[cfg(test)]
+
+#[cfg(test)] tells rust to compile and run test only when you specify cargo test not when you specify cargo build.
+This reduces compile time as well as space in the resulting articfact,because the test are not included.cfg - means configuration
+
+Testing Private Functions
+Private functions are function in a particular module.I.e we create a module named tests for each file containing our rust code that need to be tested.essentially module tests will be a child of our main module.since child modules can access items of their ancestors as shown in the module chapter we learnt  some time ago.hence we don’t need to explicitly annotate our fn with public keyword
+
+Integration Tests
+Individual parts of our code can work well  separately but have issues when required to work together with other parts and hence the need of integration tests.
+
+The tests Directory
+ To create integration test we first need tests directory, next to srccargo knows where to look for integration tests (tests dir) and we can create as many tests files as we want.each file will be compiled as its own crate.
+- Import the library into each test crate.
+- We don’t need annotation as cargo will only compile this when cargo test is run.
+When we run cargo test, rust runs 
+- Unit test 
+- Integration test
+- Doc tests.
+If any of the test fails rust won’t continue with the subsequent tests.to run integration separately you can run:cargo test -- test namefile
+Submodules in Integration Tests
+
+
+
+An I/O Project: Building a Command Line Program
+
+
