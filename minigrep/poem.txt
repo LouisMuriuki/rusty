@@ -1,9 +1,1106 @@
-I'm nobody! Who are you?
-Are you nobody, too?
-Then there's a pair of us - don't tell!
-They'd banish us, you know.
+Rust Notes 
 
-How dreary to be somebody!
-How public, like a frog
-To tell your name the livelong day
-To an admiring bog!
+Uses 4 spaces instead of tab
+
+!-symbolises macros- they are like functions#compile and runtwo steps compile - rustc main.rs
+Run - ./mainCargo
+cargo new hello_rust
+ Compile- cargo build
+ Run - ./target/debug/hello_cargo
+ Compile and run - cargo run check if it compiles - cargo check
+Cargo build —release Programming a guess Game
+Prelude-a list of things rust imports in every rust program
+By default variables are Immutable meaning they can’t change, TO MAKE THEM MUTBLE WE pass mut keyword
+
+ let mut guess = String::new();
+    // mutable  variable guess binded to a new empty instance of a string
+
+
+ Generating secret Number
+Rust does not have random number generation functionality in its standard library but there is a rand crate  with said functionality	crate is a collection of  rust source code
+Rand crate - is a library- code intended to be used by other programs not executed on its own.
+Cargo doc —open documentation  locally available to developers Match- an expression made up of arms, the arms consist of a pattern to match against, and the value to be run if the value given to the match fits the the arms patternshadowing allows us to reuse a variable- esp when converting it from one type to another
+
+parse method on strings convert strings to another type, however we must type the variable accordinglyi.e
+let string=“9”let number:i32=string.parse().expect(“failed”);
+
+Variables
+In rust “” (double quotes-string) while ‘’ (single quotes -character)constants are immutable in nature, usually in uppercase  and must have type declarecred, 
+Mutability - ability of a variable to be reassigned another valueDataType
+Every rust value has a type to tell what kind of data is being specified so as to know how to work with that data
+1.scaler-datatypes that represent single value I.e integer, floating-point, numbers, boolean, characters
+Default integer type is i32.
+-Integer overflow wrapping - The values greater than the minimum value a type can hold, wrap around to the minimum of the values the type can hold
+2.compound- datatypes that group multiple values into one1.turple a group of a number of different elements of different type. cannot grow or shrink-immutablelet tup:(i32, f64, u8)=(500,6.4,1)
+Access individual values via:  1. destructuring the turple
+2. Dot index of item let tano=tup.0
+
+Unit- turple without any value
+Let tup:()=()
+
+2.Array
+Collection of multiple values with same typeshave fixed length - don’t grow or shrink
+Type it by setting the datatype of the numbers followed by the number of elements
+Let array:[I32,5]=[12,12,12,33,3]
+
+Initialise array to contain same values
+As let array a= [3;10]will contain 10 elements defaulting to number 3accessing the array-a[3]Polymorphism- oop concept to access objects of different types through same interfaceI.e java in different functions can have same name but the correct will run depending on the parameters past
+
+FUNCTIONS-uses snake case for functions and variables 
+Parameters- are placeholders for arguments
+Arguments- real values passed to the function
+Passing the type of a parameter, ensures you don’t need to define the type ever again in the scope, also provide more error messages
+
+Statements are instructions that perform some action but don’t return a value I.e let y=6; assignment is a statement 
+Expressions evaluate to resultant value I.e calling a function, macro, a new curly brackets is a expression I.elet y={
+    let x=3;
+        x+1
+}
+If you add a semicolon  at the end of the last line the curly brackets changes to a statement and hence the code doesn’t compile
+
+
+A function can return a value but the type must be defined after the arrow 
+
+Control Flowif condition
+loops-loop{}
+Loops are infinite, 
+Stops code execution using break;you can also return a value from a loop by adding the value you want returned after the break then assign the loop to a variable I.e refer to loops code in rusty
+-while loop- eliminates combination of loop and if else
+-if else
+-for loop - much better suited for loop with collections I.e arrays OWNERSHIP
+Set of rules that govern how rust program manages memory.
+Gives rust memory safe superpowers.
+HEAP AND STACK
+Both the stack and the heap are parts of memory available to your code to use at runtime
+STACK
+Uses last in, first out approach Adding data to stack is pushing, pop is the oppositeAll data stored on the stack must have a known, fixed size. 
+Data with an unknown size at compile time or a size that might change must be stored on the heap
+
+HEAP
+Less organised,to put data on the heap, you must request for a certain amount of space, memory allocator will then look for space that is big enough and mark it as in use, and returns a pointer which is the address of that location - Allocating the heap or just allocatingAdding data to stack is not allocatingBecause the pointer is a known, fixed size, you can store the pointer in a stack, but when you want the actual data you must follow the pointerPushing to stack is much more faster and efficient since the allocator does not need to look for memory in the first place.Accessing data in heap is much more slower than stack because you don’t have to follow a pointer, data is scatteredProcessor are faster if they jump less in memory, and access data in a more organised manner.
+When your code calls a function, the values passed into the function (including, potentially, pointers to data on the heap) and the function’s local variables get pushed onto the stack. When the function is over, those values get popped off the stack.Ownership rules~Each value in rust has an owner.
+~Each value can only have one owner at a time 
+~when the owner goes out of scope the value is dropped
+The String Type:a value of type string is most likely stored on the heap as it contains data that is of an unknown size at runtime (mutable) as compared to other data types discussed above.
+A value of type String is mutable while a  string literal ie. let =“hey” is immutable
+Use push_str to mutate and append strings - // push_str() expects type &str
+
+
+In rust memory is automatically returned once the variable goes out of scope. Rust calls drop method(which will return the memory ) at the closing of curly brackets
+I.e in for type string the stack will store length, capacity and pointer. The pointer will in turn point to the memory location used on the heap
+Length- memory in bytes that the contents of type String are usingCapacity - memory in bytes that the  type String has received from allocator
+Note :
+Since we store data from type string in heap and the pointer etc on stack, copying a variable of string type to another only copies the 3 pieces of data stored on the stack, the actual data held by the variable is not copied, if mishandled this might lead to compilation errorsI.e s1=s2If rust somehow would be able to copy both the data  on the heap and stack this would be a very expensive calculation.One of rust design choice is to never create deep copies of your data(only copy data on stack memory), therefore any automatic coping is assumed to be inexpensive(shallow copy) in terms of runtime performance.
+Since rust cleans up and drops memory when a variable goes out of scope, when binding one string to another they both point to the same memory and hence they can drop the same memory(double freeze error), however after the line s1=s2 rust no longer considers s1 valid and doesn’t free anythingsince we are only copying the 3 pieces of data it is refereed to as shallow copy but in rust, since we take the step further and invalidate the memory we call it a moveto copy data without invalidating we can use .clone() method- this may be expensive Integers however are of a known size at compile time so they are stored on the stack and making copies is not that expensive hence we can use : let y=5; let x=y;   without clone methodwe have access to  a special annotation called the copy trait that we can place on data stored on stack, if the type is implemented the variable can be copied without invalidation.however the type must not have implemented  the Drop trait priorAny group of simple scalar value can implement the copy trait.Ownership and Functions
+Passing a variable to a function will copy or move the variable just like assignment,in order to retain the ownership we can return the passed parameter back to return ownership
+  Or use references as explained below
+Return Values 
+Return values from functions also return ownershipReferences and Borrowing
+-refer some value without ownership
+Opposite is dereferencing which uses *
+Reference- is like a pointer we can follow to access data stored on that address, usually data is owned by another variableguaranteed to point to existing and valid data unlike an actual pointer.		The concept of losing ownership each time you pass a variable to a function is a bit too much, hence we introduce references.Borrowing
+The Process of creating references
+Immutable by default- cannot be changed
+You cannot borrow more than one value at a time 
+This prevents data races: they can occur in either of the following reasons:
+* Two or more pointers access the same data at the same time.
+* At least one of the pointers is being used to write to the data.
+* There’s no mechanism being used to synchronize access to the data.
+Not possible:
+    let r1 = &s; // no problem
+    let r2 = &s; // no problem
+    let r3 = &mut s; // BIG PROBLEM
+
+We can use curly brackets to our advantage though, to set up scopes and hence use multiple refences.	Note a reference’s scope starts from where it is introduced and continues through the last time that reference is used.
+Possible:     {
+        let r1 = &mut s;
+    } // r1 goes out of scope here, so we can make a new reference with no problems.
+
+    let r2 = &mut s;you can have multiple immutable references assignment as immutable reference only read and don’t change the data of the variable
+
+Dangling references.
+Sometime we can have a pointer pointing to some non existent location in memory or to a location that might have been given to some other owner.
+Rust prevents this by a compile time error
+
+Reference rules1 A reference must be valid at all times.
+2 You can only have one mutable reference or a number of immutable references at a time
+- Having a single mutable reference ensures we prevent data races,The Slice Type
+A kind of reference.
+Enables you to reference a consecutive subset of elements within a collection rather than the entire collection.(potion of a string)
+Does not have ownership.
+We create references by using a range within brackets by specifying the starting index and  end index which is not included	
+Length of slice = ending index - starting index
+I.e [0..10] -from 0 -10 , 10 not included
+I.e [..] - whole string
+i.e [..6] - starting from zero, 6 not included
+Type that signifies string type is &str -note difference with &String
+as_bytes()=convert strings in to an array of bytes
+iter()=is a method that returns each element in a collectionString literals as Slices.
+Both use the &str type 
+Meaning they are both immutable references.
+String literals are stored inside the binary, this means they are part of something
+This means that string literals are slices already by default;
+&String-mutable
+&str-immutable
+When passing parameters to function a more experienced rustacean would use the &str type instead of the &String type as it allows for much more functionality
+ Check GitHub for more	 
+String slices are generally used as part of a string but there are other types of slices too I.e array slices.
+
+Array slice i.e 
+Let array=[1,2,3,4,5,6,7,8,9];
+Refer to GitHub
+
+
+Defining and instantiating Structs
+Structs are like tuples in that they hold multiple related values of different typessimilarity: can hold data of different types
+diff: in structs, you’ll name each piece of data so its clear what the values means, in tuples you have to use the index to access the particular value of data.
+Adding name means structs are more flexible in that you don’t have to rely on the order of data to specify or access the values of an instance.
+Basically the structure of structs is similar to an object interface in js
+To use a struct we define an instance of the struct and add curly brackets with key and pair -just like in js
+user{age:i32,
+Name:String,
+}
+
+Let user= user{age:String::from(23),
+Name:string::from(“luiio”),
+}
+
+We can create instances from other instances using the struct update syntax (..) two dots , which looks like speed operator in js (…) three dots
+Let user1=user{
+Name:string::from(“luv”),
+..user
+}
+we use assignment  operator = unlike colon in js where we use colon as such:we use the assignment operator to show that that data is being moved,(however note that those datatypes that implement the copy trait are usualy not moved but rather copied)
+however the struct will become invalid if we spread data on it stored on the heap i.e (Strings,Compound types) to another struct
+however if we spread only scalar datatype, struct is still valid,
+
+Turple structs
+They have the added meaning of a struct but don’t have name fields rather only a name and the types of the field
+Example of a tuple:
+Let tuple:(i32,i32,f64)=(0,0,0.90);
+Example of a tuple struct:
+struct Point(i32, i32, i32);
+
+Useful for when you want give the whole tuple a name and make the tuple of different type from the rest.useful when writing the name for each field would be verbose.
+
+fn main() {
+    let black = Color(0, 0, 0);
+    let origin = Point(0, 0, 0);
+}
+
+Unit-Like Structs Without Any Fields
+You can also define unit like structs, this are structs that don’t have any fields, behave similarly to ()useful when you want to implement a trait on some type but don’t have any data that you want to store in the type itself
+struct AlwaysEqual;
+let main=AlwaysEqual;Ownership of Struct Data
+In structs in order for the struct data to be valid, we use String type rather than string refernces, this way we ensure our data is valid, however we could use string references as well, but include lifetimes in themlifetimes ensure data referenced by the structure is valid as long as the structure is valid.
+
+An Example Program Using Structs
+Refer to GitHub
+ 
+Structs  in general will group related data that work together
+By default we can’t use the println macro to display complex data like structs, this is because structs don’t implement the ‘Display’ trait.Instead we can {:?} use instead of {}  just to inform the compiler we want to use an output format called debug we must also explicitly	opt in to debugging information by adding #[derive(Debug)] before structs definition
+
+Instead of println!() we can use dbg!()however it takes ownership of a expression, prints file and line number and the value and returns the ownership
+-we can pass a reference instead to counter this ;)
+
+Defining methods in structs:
+Methods are defined within the context of a struct (or enumeration or trait object)
+Methods are like functions but their first parameter is always self, which rep the instance of the struct the method is being called on.
+I.e  struct_instance.method()
+Check github
+
+Methods also take ownership,borrow mutably or immutably and return ownership as wellAssociated functions
+All functions defined within an impl block are called associated functions because they’re associated with the type named after the implAssociated function are  be  defined without passing self as first parameter and hence they are not considered to be methods I.e String::from(“text”) - from is an associated function hereAssociated function are not methods,
+They are used in making constructors that return a new instance of the struct often called new, new is not a keyword in rust though
+Impl rectangle{
+fn square(size:u32)-> Self{
+Self{
+Width:size,
+Height:size,
+}
+}
+}check GitHub
+
+
+Enums and pattern matching
+Enums allow you to define a type by enumerating its possible values.
+Values inside an enum should begin with capital letters
+
+enum IpAddrKind{V4,
+V6(String)
+}
+
+IpAddrKind - becomes a custom datatype that we can use
+We can create instances as follows:
+Let four=IpAddrKind::V4
+Enums can as well hold their data
+ Let six=IpAddrKind::V6(String::from(“luv”))
+
+We can use enums as well to store data in a more concise manner
+Enums allows us to store more complex data even then structs:
+Enum ipAddr{
+V4(u8,u8,u8,u8),
+V6(String)
+}
+
+We can basically  hold any data with enums, including other enums,  structs etc
+Just like in structs we can define methods on enums using the impl keyword The Option Enum and its adv over null values
+
+enum Option<T>{None,
+Some(T)
+}The standard lib has a couple of predefined enums and option is one of them,- it is defined in the prelude, so there is no need to import it again
+it basically encodes a scenario where a value could be something or nothing preventing null values.
+Rust does not have the null feature that many languages have, null means that there is no value.
+
+In rust anywhere we see Option<T> we can assume that the value will at one point have a null value,
+Likewise to use a value that might be null, we must explicitly use the Option<T> type.
+
+This ussually defined in the std lib 
+it is so usefull that it is included in the prelude, we can even use the values without the option:: prefix,,check code below
+
+Let value=Some(5)
+Value will be of type Option<i8> and not i8- note these are two different types and hence if you try to add them etc you might get a compiler error.
+option enumeration has a large number of inbuilt methods.
+Check GitHub
+
+The match Contro flow Construct
+Allow you to compare values against series of patterns and execute code based on which pattern matches
+Things you can do with match:1. Bind to values 
+2. Matching with option T to check whether the value is a None  value 
+
+List match keyword followed by an expression , followed by  arms: have two parts (pattern and some code) i.e(coin::Penny) and the  => operator with separates the pattern , then followed by code -check GitHub
+Diff with IF : with if the condition needs to evaluate to a boolean value, here it can be any type.
+
+Extracting values from enum Variants
+Match expressions  can help achieve this, check out GitHub
+
+Match with option<T>
+-say you want to check if value if available before you execute function, you can use match: check GitHub
+Match keyword followed by an expression.more like how an if statement is but the difference is that the if must result to a boolean while match can result in any type
+
+Change Option<T> to T in rust
+We can use the match expression to do the conversion as below:  let optional_five = match five {
+        None => 0,
+        Some(five) => five,
+    };
+Notice at none I returned zero, this will depend on you and how you want to work with your data.
+Matches are exhaustive:we must exhaust every last possibility in order for the code to be valid. 
+- they won’t compile if you have not covered all possible values, I.e won’t compile if you check for some(I) only when the type is of Option<T> (you have left out None and the compile knows that)this addresses the billion dollar mistake of having null values in our code.catch all patternusing the match expression on enums we can perform special functions on some values and one for the rest (catch-all). check GitHubthis ensures that the match expression id exhaustive and handles and cases avoiding the billion-dollar mistake we are trying to evade in the first place.
+For The catch all we can use the specific value passed to the function executing our match and these value will bind to the value of the specific enum variant should the pattern matchAlternatively we could use the inbuilt catch_all (_).
+It will however not bind to the value of the resulting variant of the enum.
+IF LET
+Let’s you compare values  that match one pattern and ignore the rest in a less verbose manner as compared to match statement.we don’t have to include that _ => () bs as in match
+However you loose exhaustive checking that match enforces.takes a pattern followed by an expression separated by equals sign
+ Let a =some(2U8)
+If let Some(x)= a{
+Print!({max})
+}
+If let can also have an else statement. The else block will run code that would be equivalent to _ => () above.for example we can include code to incrementally count the number once a value doesn’t match a pattern GitHub
+
+
+Managing Growing Projects with Packages, Crates, and Modules
+
+As code grows we will need to separate and group related code
+A package can contain multiple binary crates and optionally one library crate
+As a package grows, you can extract parts into separate crates that become external dependencies. This chapter covers all these techniques. 
+We’ll also discuss encapsulating implementation details, which lets you reuse code at a higher level: some parts of our code can be public while others are privateScope-  programmers and compilers need to know whether the name used in a particular block of code refers to a variable, function enum, struct.etc, for this we can define a scope were that part of the code can only have one name occurrence.
+Rust has a number of features that allow you to manage your code’s organization, including which details are exposed, which details are private, and what names are in each scope in your programs. These features, sometimes collectively referred to as the module system, include:
+* Packages: A Cargo feature that lets you build, test, and share crates
+* Crates: A tree of modules that produces a library or executable
+* Modules and use: Let you control the organization, scope, and privacy of paths
+* Paths: A way of naming an item, such as a struct, function, or module
+
+Packages and Crates
+Crate- Is the smallest amount of code that the rust compiler considers at a time(collection of rust source code that compiles at the same time)-Binary crate
+-Library crate
+
+Binary crate- rust code that you can compile to an executable and run (smallest hello world code is a crate it self)
+It contains a main fn that defines what’s happens when the executable runs
+Library crates - don’t compile to an executable n either do they have a main fn but rather define functionality intended to be used by multiple	projects.
+
+But in general crate means a library as used in other languagesPackage- is a bundle of one or more crates that provides a set of functionality
+A package contains cargo.toml file that  describes how to build this crates
+A package can contain more than one binary crate but at most one library crate and at least one crate	
+If cargo finds a src/main.rs it knows this is a binary crate and if it finds a src/lib.rs it knows this is a library crate.
+To have multiple binary crates place your files inside src/bin directory
+
+Defining Modules to Control Scope and Privacy
+1. Start from the crate root- compiler will check in the root of the crate for usually main.rs or lib.rs
+2. Declaring modules-modules are declared in the crate root file. E.g mod Garden;
+* The compiler will look for the module’s code in these places:
+* Inline, within curly brackets that replace the semicolon following mod garden
+* In the file src/garden.rs
+* In the file src/garden/mod.rs
+3.Declaring sub modules- can be declared in any other file part from the root crate
+* The compiler will look for the module’s code in these places:
+* Inline, within curly brackets that replace the following mod garden
+¸¸¸¸* In the file src/garden/vegetable/zzy
+4. Path to code in modules-once a module is part of your crate, you can refer to any code in that crate as long as privacy rules still apply.eg to refer to type Asparagus we doit as  crate::garden::vegetable::Asparagus
+5. Private vs Public-code within a module is private by default to make public we add the keyword pub before mode
+6. Use keyword- Within a scope, it creates shortcuts to reduce repetition of the long paths.i.e in this path crate::garden::vegetables::Asparagus we can “use crate::garden::vegetables::Asparagus” and from then on we only need to write Asparagus to make use of that type in the scope
+
+Grouping Related Code in Modules
+Modules helps use increase readability, reusabilty and privacy of items-modules are private by default.
+Create a lib with cargo cargo new restaurant —lib
+Modules can hold defination of other items e.g structs,enums, constants, traits- hence you might find them gropued together and named why they are related.
+Devs reading the code can navigate with modules instead of reading through all the definitions in order to find the relevant code they are looking for
+src/main.rs and src/lib.rs are referred to as root crates because the contents of either of the two files form a module named crate at the root of the crates module structure (module tree)
+Paths for Referring to an Item in the Module Tree
+
+We use paths to find an item in a modules- just like any prog language
+Absolute path - full path starting from a crate root,
+For Code from an external crate, absolute path begins with the crates name and for code in our current crate the absolute path begins with the literal crate.Relative path - starts from the current module and self , super 	or any identifier in the current module
+-both are followed by one or more identifier separated by doubles colonin rust all items( functions, enums, structs) are private to the parent module by default; hence incase you need to privatize something just put inside a module
+Basically children can access parents but parents cannot access children by default unless we give them that option.making a module public does not make the items in the modules public, you will have to make them public as well- this includes structs, enums, etc.-Modules are containers
+
+Starting Relative Paths with super
+We can construct relative paths that begin in the parent module, rather than the current module or the crate root, by using super at the start of the path-  like using .. syntax
+I.e 
+fn deliver_order() {}
+
+mod back_of_house {
+    fn fix_incorrect_order() {
+        cook_order();
+        super::deliver_order();
+    }
+
+    fn cook_order() {}
+}
+
+Making Structs and Enums Public
+For structs 
+We will use pub like before however, a struct can be public but its field not public, hence we must also specify which fields are going to be public or not
+pub struct Breakfast {
+        pub toast: String,
+        seasonal_fruit: String,
+    }
+enums
+Pub keyword on the enum name alone will do the trick here
+
+Bringing Paths into Scope with the use Keyword
+Use reduces the code we need to write while referring to a path I.e check out code below
+use crate::front_of_house::hosting;
+    hosting::add_to_waitlist();
+
+Declare use in the scope you’d want to use the imported modules, structs ,functions etc. - declaring use at the top level then trying to use it inside a module wont work since the scope is different.
+Alternatively you can append ‘super::’ before your function, etc to make it accessible
+
+Creating Idiomatic use Paths
+Above you might wonder why we didn’t do this
+use crate::front_of_house::hosting::add_to_waitlist();
+add_to_waitlist();
+It is ideally idiomatic/recommended to call a function with its parent, so that it’s clear where the function comes from. I.e
+hosting::add_to_waitlist();
+When calling other items, I.e structs, enums etc it is advisable to write the full path in the use statement
+It’s the way people write rust code.
+
+Providing New Names with the as Keyword
+Sometime we may have to import two items with the same name within our crate, we can use the as keyword to differentiate between	 the two
+use std::fmt::Result;
+use std::io::Result as IoResult;Re-exporting Names with pub use
+When we bring a name into scope it only available in the new scope which is private, to give the code that calls our code access to that name use can combine use and pub keywords
+This technique is called re-exporting because we’re bringing an item into scope but also making that item available for others to bring into their scope.
+Check the book example
+
+Using External Packages
+ To use external package we must define	 the package name in our cargo.toml file and then use the use statement to import the package in our project. e.g  use rand::Rng;
+Std library for example is an external crate to our package but it ships with rust so we don’t need to include it in the cargo.toml file, however to use it we must import it using the ‘use’ keyword.
+ use the absolute path to bring in external crates
+
+Using Nested Paths to Clean Up Large use Lists
+Importing different items from the same modules tends to take a lot of vertical space, hence we can use nested paths to bring into scope the same items in one linewe specify the common module followed by two colons then a curly brackets with what we want to import
+e.g use std::{cmp::Ordering, io};
+If we have 
+use std::io;
+use std::io::Write;
+And decide to use nested paths instead we will do it this wayuse std::io::{self,Write}
+
+The Glob Operator - *
+ If we want to bring all public items defined in a path we can use glob operator - *
+
+Separating Modules into Different Files
+While separating a module from the root file is good in reducing code complexity and readability , we need to understand how to import the module,
+Check GitHub project - module
+We first have to load the file using the mod declaration
+
+8.
+Common Collections
+Collections in rust are data structures that store multiple values, unlike arrays or tuples, collections are stored on the heap.Arrays have a fixed known size hence they are stored on the stack
+* A vector allows you to store a variable number of values next to each other in memory.  Vec<T>
+* A string is a collection of characters	
+* A hash map allows you to associate a value with a particular key.
+
+Storing Lists of Values with Vectors
+Allows us to store more than one value in a single data structure next to each other in memory
+To create a vector we can  use the Vector::new() function or using the vec!
+    let v: Vec<i32> = Vec::new(); //here you have to give the type
+The Vec<T> can hold any typewhen we create a vector and pass a value to it , rust can infer the type from the value so we rarely have to type it.
+However if you create an empty vector you must explicitly type it since rust can’t infer it.
+Rust has a vec! Macro which will create a new vector that holds the value you give it.
+let vec=vec![1,2,3]
+
+Updating a Vector
+We can use the push method to add items to our vector
+Like any variable in order to change it we must add the mut keyword
+Let vec=Vec::new(); // creates a new empty vector
+vec.push(9);
+
+Reading Elements of Vectors
+
+They are two ways of referencing vectors , using indexing syntax or the get method
+Let third:&<I32>=&vec[2]; //indexing
+Let third:&<I32>=vec.get(2);
+
+Using indexing and & will give us the reference of the index value of the vector
+Using get method retuirns Option<T>  which we can use with match to get the Some<T> and None types
+Some<T>-wiill give us the actual value,
+NOne- to handle the case of null values
+Hence here Let third:&<I32>=vec.get(2); we can’t use the &(reference) since get will return  Option<&i32> instead of &i32
+Usage of these two depends on your application needs, eg if you access a non existent value with indexing the program will panic, but if you use get  you can handle null cases with None- eg if the index is a user input you can handle a case and ask them to reenter the number again.
+
+As seen we have not listed vec3 are used it, this is because vectors store items next to each other on memory and adding a new element might cause new memory allocation of the vector, as such refernce t the fisrt element or any other, might be referncing a deallocated memory I.e:let mut v =vec![1,2,3,4,5];
+Let first= &vec[0];  
+V.push(6);
+ println!("The first element is: {first}");
+
+Pop-removes and returns the last element 
+
+It is not allowed to mutate a vector that is stored on the heap and has been accessed immutably- this tells the compile we are going to perform a read only operation.vector store there value next to each other hence adding a value might lead to memory re-allocation and copying the values if the current doesn’t fit.Hence if we add a new value and try to access your vec we might be accessing a wrong memory hence rust won’t allow you to read the value after you have mutated- program will panic
+
+So far we have used match structs, enums and vectors
+
+Iterating over the Values in a Vector
+
+To access each item inside the vector we can use for loop to iterate and access immutable values
+    let v = vec![100, 32, 57];
+    for i in &v {
+        println!("{i}");
+    }
+For mutable vectors we can modify them by the help of deference operator
+To change the value that the mutable reference refers to, we have to use the * dereference operator to get to the value in i before we can use the += operator.  let mut v = vec![100, 32, 57];
+    for i in &mut v {
+        *i += 50;
+    }
+
+We normally pass reference to the vector in a for loop because :
+1. The loop would assume ownership of the vector if we did not pass the reference instead- we wouldn’t be able to use the vector again
+2. It prevents simultaneous modifications of the vector at the same time.- Ensure we have only one reference to a mutable data Structure
+Using an Enum to Store Multiple Types
+A vector can only store values of the same type, this is unconvincing because there are definitely uses cases where wed want to store values of different types in our vector, however the power of the enum can help us here:
+So basically an enum can have multiple values of different types stored together under one type; that of the enum.
+We can essentially  store the different types to the enum , create a vector and pass that enumerates to the vector.
+enum SpreadSheet{
+Int(i32),
+Float(f64),
+Text(String)
+}
+
+Let v =vec![SpreadSheet::Int(4),SpreadSheet::Float(4.87656789),SpreadSheet::Text(String::from(“Slash”)] ;
+
+Dropping a Vector Drops Its Elements
+Like any other struct, a vector is freed when it goes out of scope,so a vector is a struct?
+
+STRINGSStoring UTF-8 Encoded Text with Strings:
+Strings are implemented as a collection of bytes, and has some methods to provide functionality when those bytes are implemented as text.here we will discuss:1. operations on strings that every collection type has I.e creating , updating and reading
+2. How strings are different from other collections, namely how indexing to a string is different namely in differences between how people and machines interpret it.
+What Is a String?
+Rust has only only string type in the core language which is the string slice seen as &strstring slices are usually references to UTF-8 encoded string data stored else where;
+ string literals are stored in the programs binary and therefore are string slices
+String type is provided by the standard library rather than being coded into the language , is a growable, mutable, owned UTF-8 encoded string type 
+Both String type and &str are UTF-8 encoded
+
+Creating a New String
+Many of the operation available for Sting are available for vector;
+String is implemented as a wrapper around a vector of bytes with some extra guarantee, restrictions and capabilities
+Eg the new function. String::new() // Vec::new()this creates an empty String but often we wan to have some initial data, we can use this:1.to_string()- which is available to any type that implements  the display trait	
+Let s=“initial text”.to_string();
+2.String::from(“initial_tetx”);which one to choose is unto yourself, style and readability Strings are UTF-8 so they can store symbols,characters, emojis, text, etc.
+Updating a String1. concatinate with Plus operator (+) - to avoid ownership lose use a reference
+2. concatinate with format!()
+3. Append a string with push_str()- does not take ownership
+4. *Push - works like push_str but only for single characters 
+Just like the vec<T> String can grow and change it contents if you push data into it.you can use the + or the format! to concatenate values
+
+Appending to a String with push_str and push
+You can use the push_str method to grow the string by appending a string slice
+It does not take ownership of the StringSlice hence it can still be used 
+
+Concatenation with the + Operator or the format! Macro
+
+ let s1 = String::from("Hello, ");
+    let s2 = String::from("world!");
+    let s3 = s1 + &s2; // note s1 has been moved here and can no longer be used
+Si is no longer valid and the reason we used a reference to s2-&s2  has to to with the signature of the method called when we use the + operator is usedit looks like :
+fn add(self, s: &str) -> String {
+We can only add &str to String and not String with Stringbut as seen we are trying to add &string to String even though the method signature says &str.this is because rust compiler can  coerce a String into a &str[..]also as add does not take ownership of s we can still use s2.we can also see that add take ownership of self as it does not have a &meaning we can ownership os s1 append a reference to s2 and return the result to s3; 
+this statements looks like we are lots of copying but that is not the case, this is actually more efficient than copying your way into it.Remember above we said strings provide a little more capabilities but also restrictions.
+Format MacroThis makes appending strings much more easier to read and write, especially when concatenating multiple stringsworks exactly like the println! But on this case we return the concatinated stringas seen variables are put in {} which is wrapped by double quote notation
+format!(“{}”);
+
+Indexing into Strings
+If you try to index a string in rust as with other programming languages, you would get an error.
+Rust does not support indexing in string, why not ? Let understand why
+Some characters ins string take more than one byte- usually a letter will take one byte.due to this if we try to access a string value with index, it may lead upto an unexpected behaviour thus rust won’t compile.
+
+Bytes and Scalar Values and Grapheme Clusters! Oh My!
+Another point about UTF8 is that there are three ways to looks at string from rust perspective
+-bytes
+-scalar values
+-Grapheme clusters-closest thing we could call letters
+As you can see rust stores string in different types so indexing would not be appropriate as there is no superior way to look at the strings
+The final reason why indexing is not possible in rust string is because indexing is expected to take constant time (O(1)). But this isn’t possible to guarantee performance in rust as rust would have to walk through contents from the beginning to the index to determine how many valid charatcters there were.
+
+Slicing Strings
+ As we have seen indexing in rust might result to unexpected behaviour, and is difficult due to the three different type it can be stored as.however if you really need to index you can provide a range instead of  of [] with one number I.e
+let hello = "Здравствуйте";
+let s = &hello[0..4]; 4th item not included.
+Instead of 
+let hello = "Здравствуйте";
+let s = &hello[4];
+
+Since as discussed earlier this characters take 2 bytes instead of the	normal I byte hence you’d get s=Зд
+If we were to to try and slice part of a character byte as in using the example abovelet s = &hello[0..1];we’d get a compile error
+Be  careful on how you generate string slices from string to prevent program panicking
+
+Methods for Iterating Over Strings:
+The best way to operate on pieces of  strings is to be explicit on where you want chars or bytes.
+For individual unicode scaler values use the chars method
+Calling chars on  Зд returns the individual values of type char
+For I in LOUis.chars(){
+Println!(“{I}”);
+}
+Alternatively you can use the byte method which returns each raw byte,208,151,208,180
+For I in LOUis.bytes(){
+Println!(“{I}”);
+}
+
+Storing Keys with Associated Values in Hash Maps
+This is the typeHashMap<K, V>store their data on the heap
+All keys must have same type as each other.
+Object in JS
+Stores a mapping of keys of type K to values of type V using a  a hashing function, which determines how it places this keys and values into memory
+Hashmaps are useful when you wan to search for data, not by using index as with vectors but by using a key that can be of any type.
+Hash maps are there least used among the rust collections hence they are not included in the prelude.
+Creating a New Hash Map
+
+Since they are not in the prelude, we need to use the use key word to bring them into scopeuse std::collections::HashMap;
+We can create a new hash map by using the new keywordlet mut scores=HashMap::new() 
+We can use insert to adding elements to the hashmap.
+ scores.insert(String::from("Blue"), 10);
+
+Jus like vectors, hashmaps are homogeneous, meaning there keys need to be of the same type and values as well, we can use enums to helps use here, incase we have items of different types we want to store in out hash map.
+use std::collections::HashMap;
+
+    let mut scores = HashMap::new();
+
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
+
+
+Accessing Values in a Hash Map
+
+We can get a value out of a hashmap by using the get method.
+
+Let Blue=“Blue”.to_string();
+Let score =scores.get(&Blue).copied().unwrap_or(0);
+The get method returns Option<&V>, if there is no value for that key the method returns  None.you could argue we could do a match here as well to handle the same value from get.
+This program handles option by calling .copied() to get an Option<i32> type rather than  the Option<&i32>
+Then unwrap_or to set score to zero if scores does not have an entry for the value 
+
+Accessing Hasmap print values in arbitrary  order 
+Just like  in vectors we can iterate over the value of a hashmap as seen:
+for(key,value) in &Hasmap{
+print(“{key}:{value}”);
+}
+
+Hash Maps and Ownership
+For types that implement the copy trait the value is copied, while for owned value like string the values will be moved and the hashmap become the new owner
+When a type implements the Copy trait, it means that values of that type are copied implicitly when they are assigned to another variable or passed to a function.
+This is mostly not accurate but will help understand: by default all items stored on the heap don’t implement the copy trait, however those who are on the stack do.
+We can do some magic to implement  wrapper to the heap stored items so that they implement the copy trait.
+For type that don’t implement the copy trait, pass reference instead.
+
+Updating a Hash Map
+There are three ways to do it:
+1.Overwriting a Value
+If we add two key values pair contains same name for the key but different values, the former will be ignored and the latter be used  as the correct value.
+2.Adding a Key and Value Only If a Key Isn’t Present
+Check if key exists , if not add else don’t addthere is a special Api called entry that takes the key you want to check as a parameter, the return value of entry method is an enum called Entry, that represents a value that might or might not exist.
+scores.entry(String::from(“Blue”)).or_insert(50);since we already have Blue this won’t be inserted.or_insert method on Entry returns a mutable reference to the value for the corresponding entry key if that key exists and if not, insert the parameter as the corresponding value for this key and return the reference to this new value.
+Updating a Value Based on the Old Value
+Look up keys value, then update it based on the old value,
+The split_whitespace method returns an iterator of string slices that are sub-slices of the original string slice, separated by whitespace.
+
+Hashing Functions
+by default hash maps contain a hashing function called SipHash that can provide resistance to denial of service attacks involving hash tablesit is slower but offers better security, you can swap it out in favour of your own choice that is faster by specifying a different hasherHasher is a type that implements the BuildHasher trait.
+Error Handlingrust has a panic macro - when a program panic it will print a failure message, unwind , clean up the stack and quit.Via an env variable you can make rust display the call stack when a panic occurs to make it easier to track down the source of the panic.
+By default when program panic rust will unwind which means rust walks back up the stack and cleans data from each function it encounters,however walking back and cleaning up is a lot of work therefore rust gives you the opportunity of aborting instead-this however won’t clean up the stack.Memory that the program was using will then need to be cleaned by the operating system.
+If in your project you need to make the resulting binary as small as possible you can switch from unwinding to aborting by addingpanic=‘abort’ to the appropriate profile sections in your cargo.toml file eg
+[profile.release]panic= ‘abort’
+
+Using a panic Backtrace
+
+When a rust program panics, the last two lines are the most important, one shows where our program panicked and the next is a note that tells us to run with env variable RUST_BACKTRACE=1 to display a backtrace.A backtrace is a list of all functions that have been called to get to this point.
+The key to reading a backtrace is to start from the top until you see the files that you wrote, that’s the spot where the problem originatedthe lines above the spot are code that your code has called, the lines below are code that called your code.this after and before code lines might include rust code, etc lib code, crates code etc.to run a program with backtrace, we call our code as shown RUST_BACKTRACE=9 cargo run
+ This will print a stack trace and we should start investing our panic a the first line we see that we wrote.the backtrace exact output will depend on the os and rust version you re using.in order to get backtraces with all this information, debug symbols must be enabled, by default debug symbols are are enabled when we run cargo run /cargo build without the release flag.
+Recoverable Errors with Result
+Most errors are not serious enough to require a program to panic.i.e you want to access a file but it does not exist, it does not make sense to panic but rather create the missing instead.
+The Result enum has two variants , Ok and Error as follows
+enum Result<T, E>{Ok(T),
+Err(E)
+}
+
+The T and E are generic type parameters:T will return the type of value that will be returned in a success case within the Ok variant.E will return the type of Error that will be returned in a failure case within the Error variant.
+Because Result has these generic type parameters, we can use the Result type and the functions defined on it in many different situations where the successful value and error value we want to return may differ.Example of a function that return result type because the function could fail:use std::fs::File;
+
+fn main() {
+    let greeting_file_result = File::open("hello.txt");
+}
+In the case where File::open succeeds, the value of greeting_file_result will be an instance of Ok that contains a file handle, in the case where it fails  the greeting_file_result variable will contain an instance of the Err that has more information about the error.One way to handle the Result type is by using the match expression just like we do for Option<T>
+
+greeting_file = match greeting_file_result {
+Ok(file)=>file,Err(error)=>panic!(“Problem opening file{:?}”,error),
+}In the match expression arm note we have not used Result::Ok or Result::Err. `this is because just like the Option enum Result is included directly in the prelude.Matching on Different Errors
+
+The code above will panic not matter why File::open failedhowever we want to take different action for different failure reasons.if the file doesn’t not exist we can to create a file and return the handle to the new file, else let the program panic.to do so we can add an inner match expression.refer to could_fail_handle_multiple fn in GitHubShortcuts for Panic on Error:unwrap and expect
+Using match works but it can be a bit verbose and not communicate intent well
+Result<T,E> has got various helper methods to help it accomplish  a specific task.
+Unwrap method is a shortcut for the match expression, 
+If the Result is the Ok variant, then unwrap will return value inside the Ok.
+If the Result is the Err variant , unwrap will call the panic! Macro.
+
+Expect.expect works same as un_wrap but you have the option to specify the message passed once a panic happens unlike .un_wrap which has got a default error message
+Propagating Errors
+When a functions implementation calls something that might fail, instead of handling the error within the function itself, you can return the error to the calling code, so that it can decide what to do.- Propagating the errorit give more control to the calling code, where there might be more information or logic that dictates how the error should be handled than what you have available in the context of your code
+Below is a function that reads a username from a file, if the file does not exist, the function returns the error to the code that called it:
+~ Refer to propagating Errors in GitHub.
+The calling code will then handle the Ok or Err variants respectively.
+I.e in case of Err: it can panic, teach name from other file, or set a default username.
+This procedure in rust is so common that Rust provides the Question mark operator to make this easier.
+
+Shortcut for Propagating Error : The ? Operator
+The ? Placed after a result value is defined to work in almost the same way as the match expression  we defined to handle Result above:if the result is an Ok, the value inside the Ok will get returned from this expression, else the value inside Err will get returned and propagate to the calling code and terminate the program.
+One difference though between ? Operator and match is that 
+Error values that have the ? Operator called on them , go through the from function defined in the From trait in the std lib.
+It is used to convert values from one type into another type.
+When the ? Operator calls the from function, the error type received is converted into the error type defined in the return type of the current functionThis is useful when a function returns one type to represent all the ways a function might fail, even if parts might fails for many different reasons.As seen the ? Operator is useful in eliminating boilerplate and makes this function implementation simpler.We can even make our code shorter by chaining  the methods calls immediately after the ? Operator
+Refer to GitHub on how to chain operators.Where the ? Operator can be used
+The ? Operator can only be used in functions whose return type is compatible with the value of the ? Is used onthis is because the ? Operator is designed to perform an early return of a value out of the function.
+Basically we can only use the ? Operator in function whose return type is either Result, Option on any type that implements the FromResidual.
+The behaviour of  the ? Operator when Called on Option<T> is the same a Result<T,E>  if None() is returned the function will have early exit , if some() the value inside the some will be the resulting value of the expression
+We can use ? Operator on a Result if the  function returns a Result, likewise we can use the ? Operator on an Option if the function returns an Option., but we cannot mix and match, as the ? Operator won’t convert result to Option and vice versea.
+
+In such cases where such conversion is necessary we can use methods like Ok on result or the ok_or method on Option to do the conversion explicitly.
+Main fn in Rust is the entry and exit point of an executable program, and hence there are restriction on what it can return.
+~As seen from previous example it returns () only , and this is because there are restricions on what it’s return type can be to enable programs behave as expected.Luckily main can also return  a  Result<(), E> 
+See below code where we change return type to be Result<(), Box<dyn Error>> and we added a Ok(()) at the enduse std::error::Error;
+use std::fs::File;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let greeting_file = File::open("hello.txt")?;
+
+    Ok(())
+}
+ The Box<dyn Error> type is a trait object which for now you can read as “any kind of Error” until we learn about in chapter 17.
+When a main function returns a Result<(),E> , The executable will exit with a value of ) if main returns Ok(()) and will exit with nonzero value if main returns an Err value.in C executables return integers when they exit; programs that exit successful return 0  while those that  error, return with any other integer 
+Rust also follows this convection.To Panic or not To panic
+
+You can call panic for any error situation, however by doing this you are making a decision on behalf of the calling code whether the error is recoverable or not.You could choose to return a Result value to give the calling code options	: hence it calls panic only when the Err valuee is unrecoverable.
+In most situations we would return Result to the calling code, but in situations like as examples, prototype-codes and tests it is advised to panic instead.Examples, Prototype Code, Tests  
+
+Including robust error handling in examples can lead to the examples being unclear. for example you might find methods like unwrap that could cause the function to panic being used as placeholder for a more robust error handling technique I.e match.so you might use unwrap and expect when prototyping	and then come up later with better error handling techniques.similar when doing tests youd want when a call to a method fails the whole function to fail even if that particular method is not what you were testing for. Hence calling unwrap and or expect is exactly what you should use.Cases in Which you have More information than the compiler
+
+In some situations, you can have a logic that returns a Result value even though it is not logically possible for the logic to return an error.The compiler will force you to handle the Error even though is not there, because it thinks the logic has the possibility of failing.
+In such situations, its perfectly acceptable to call unwrap and even better have expect to document why the error is failing
+Consider code below:    use std::net::IpAddr;
+
+    let home: IpAddr = "127.0.0.1"
+        .parse()
+        .expect("Hardcoded IP address should be valid");
+
+127.0.0.1 is  a valid Ip address.
+We can see that  we are parsing a hardcoded valid ip address but the will force to handle the Err variant of Result by either asking us to add expect or unwrap because the hardcoded value doesn’t change the type of the parse method.consider a situation where we are accepting the ip address as an input from the user, then our code would make much more sense to have expect  or unwrap since the user input be wrong.Guidelines for Error Handling
+It advisable to have you code panic when it’s possible your code could end up in a bad state.A bad state is when some assumption, guarantee or contract has been brokenAlso:1 BadState- is when something that is unexpected happens as opposed to something that will likely happen occasionally, like a user entering data in the wrong format.
+If someone calls your code and passes values that don’t make sense it is advisable to return an error so that the user of the library can decide what do in that case.in situations where continuing would be harmful or insecure, the best choice would be to panic and alert the user of you lib about the error so they can make the necessary fix.Similarly if you calling external code and  it returns an invalid state that you have no way to fix, calling panic is the best situation here.
+If you attempt to access an invalid data:Out of bounds memory- trying to access memory that doesn’t belong to the current data structure will cause the standard library to call panic, this protects from vulnerabilities.(accessing invalid data is the main cause of vulnerability)
+However when failure is expected, it is better to return a Result than to make a panic call.
+Example is a parser being given malformed data or a https request returning a status suggesting we have hit a rate limit. In such cases we propagate the error to the code calling it to decide how it will handle it
+Functions have contracts: their behaviour is only guaranteed only when the inputs meet a particular requirement.contract violation indicates a caller side bug and its not the kind of error you want the calling to handle, in fact the is not reasonable way for the calling to recover.
+It makes sense to panic when a contract violation occurs.
+
+The rust type system does lots of the checks hence we do not need to manually do the check our selves. How? Well the parameters are typed no. if you pass other type rather than option the code knows it does not have to handle a value which can  something and nothing rather than the specified type.
+Again if you u32, this ensure what integer is passed is never negative.
+Creating Custom  Types for Validation
+
+We might have a program with a function that expects a number but we want it to be btw 1-100 of cos we can write an if statement to check for this condition.
+Now assume that the program, has lots of function that need to do the same checks, ofcos we can write the check for every program  but this would be a bit hard on the performance  of our app.
+
+An ideal solution for this would be to implement a custom type and put the validation in a function to create a new instance of the type rather than repeating validations everywhere.
+
+
+GenericsTypes, Traits and lifetimes
+
+We use generics to create definitions of a function signatures or structs, which we can then use with many different concrete datatypes.	
+
+Why generics?prevents code duplication,
+Makes code more flexible
+Provides more functionality to callers of our code.
+
+Generics in Functionsfor example assume you have a two functions to check the largest value in an integer list and as well as in a char list, we will combine the two functions to a single function that uses generics, since the type software this values will be different I.e [i32] and [char]Now instead of the function we can use generics and have only one function that accepts a generic datatypeswe must first define the type name declaration in between the function name and  parameter list.refer to code.
+In structure Definition
+We use generic in structs just as we use them in functions I.e
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+Let tranform= Point {x:5,y:2}
+However this means that when creating an instance of the struct, the datatype of the values must be of the same type since the struct definition is generic over some type T. So if x is i32 then y must  be i32 as well.however	incase you want the values of your structure instance to be of different type that is still possible as shown 
+struct Point<T, U> {
+    x: T,
+    y: U,
+}
+
+refer to code.
+However if you find that your code requires a lot of generic type definition then that is an indicator that you should restructure your code.
+
+In Enum Definitions	Enums can also hold generic datatypes in their variants, i.e 
+enum Option<T>{
+Some(T),
+None
+}T is a generic type for the Option<T> enumSome(T) variant holds the value of T while None Variant doesn’t;t hold any value.
+
+Enum can have multiple generics as well I.e Result enum
+enum Result<T,E>{	Ok(T),        Err(E)
+} 
+
+In Method Definitions
+
+We can  implement methods on structs and enums and use generics for their type definitions.
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Point<T> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+}
+
+fn main() {
+    let p = Point { x: 5, y: 10 };
+
+    println!("p.x = {}", p.x());
+}
+
+Note that we have to declare T just after impl so we can use T to specify that we’re implementing methods on the type Point<T>
+refer to multiple_generics in GitHub to understand more on generics.
+This means that the method will be available to any instance of the structure no matter the type passed.
+One thing though, we can have a method that will only work with instance of the struct of a certain type only by specifying the type in the method definition.impl Point<f32> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+}Performance of Code Using Generics
+Generics don’t relly affect the runtime speeds of your code due to monomorphization of the code.this is the process of turning generic types to concrete types that are used when compiled
+
+Traits: Defining Shared Behavior
+A trait defines functionality a particular type has and van share with other types,A way of grouping types together by the methods we call on them*Types behaviour consists of the methods we can call on that type.
+Different types share the same behaviour if we call the same methods on all of those types.trait definitions are a way to group method signatures together to define a set of behaviours necessary to accomplish some purpose.
+ Trait example 
+
+pub trait summary{fn summariza(&self)->String;
+}
+
+Make the triait public so as to make it accessible so crates depending on this crate can access to as well,
+Declare trait with trait keyword followed by its name followed by curly brackets.Inside curly brackets declare the method signatures that describe the behaviours of  the type that implements this trait, we won’t have the function body instead	 a semicolon.Each type that implements this trait, must provide its own custom behaviour for the body of the function.A trait can have multiple methods on its body : the method signatures are listed one per line and each line ends in a semicolon.
+
+Implementing a Trait on a Type
+Check GitHub.
+
+Trait -type restrictions:
+
+Note :We can implement std lib traits like Display on our own custom types 
+We can use our own traits on external typeswe can’t implement external traits on external types.
+This is enforced by the Orhan rule, this ensures other people code doesn’t break your own and vice versa
+Default Implementations
+Sometimes it’s useful to have default behaviour for some or all of the methods in a trait instead of requiring implementations for all methods on every type.here we define the struct, define a trait and the method inside it(including body) then implement the trait on the struct, the implementation block will be empty 
+Create an instance of the structure and call the method inside the trait implementing the struct
+
+Traits as Parameters
+We can use traits to define functions that accept many different types.
+
+Notify function  calls the summarise method on its Item parameter  which is of some type that implements the summary trait.// refer to GitHub for definition of below variable you don’t understand run the code on an instance of the summary Struct otherwise the code won’t compile.
+
+pub fn notify(item: &impl Summary) {
+    println!("Breaking news! {}", item.summarize());
+}
+
+Trait Bound Syntax
+
+The impl trait syntax works for straightforward cases but is actually syntax sugar for a longer form known as trait bound; it looks like this:
+we place the trait Bound inside the angle brackets after a colon after the generic type parameter.
+pub fn notify<T: Summary>(item: &T) {
+    println!("Breaking news! {}", item.summarize());
+}
+//seems familiar? Generics.we can have two parameters that implement summary as shown pub fn Notify(item1:&impl Summary, item2:&impl Summary){}
+Clearly the impl trait is the easiest however incases as below where we want to force the two parameters to have same type,the trait bound might be the best option(using the impl trait is okay as well if you want the parameters to be of different types however they should implement the Summary trait.)
+Pub fn Notify<T:Summary>(item1:&T,item2:&T){
+}Specifying Multiple Trait Bounds with the + Syntax
+Say we wanted notify to use display formatting as well as summarise on Item.we can specify this with  +syntax:
+pub fn notify(item: &(impl Summary + Display)) {}
+we can also use the +syntax with trait bound as such:pub fn notify<T:Display+Summary>(item:&T){}Clearer Trait Bounds with where Clauses
+Using too many traits has a downside,Each generic has its own trait bound , so function with multiple generic parameters can contain lots of trait bounds information between  the functions name and its parameter list making function hard to read.
+Rust provides a syntax we can specify trait bounds inside a  where clause after the functions signature. So instead of writing
+fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {
+
+We can write :
+fn some_function<T, U>(t: &T, u: &U) -> i32
+where
+    T: Display + Clone,
+    U: Clone + Debug,
+{
+
+Less clutteredReturning Types that Implement Traits
+
+We can also use the impl trait syntax  in the return position to return a value of some type that implements a trait 
+fn returns_summarizable() -> impl Summary {
+    Tweet {
+        username: String::from("horse_ebooks"),
+        content: String::from(
+            "of course, as you probably already know, people",
+        ),
+        reply: false,
+        retweet: false,
+    }
+}
+ This means that the fn returns a Tweet of some type that implements summary trait without naming the concrete type.
+
+Using Trait Bounds to Conditionally Implement Methods
+by using a trait bound with impl block that uses generic type parameters, we can implement methods conditionally for types that implement the specified traits.
+Example:
+use std::fmt::Display;
+
+struct Pair<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Pair<T> {
+    fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+}
+
+impl<T: Display + PartialOrd> Pair<T> {
+    fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x);
+        } else {
+            println!("The largest member is y = {}", self.y);
+        }
+    }
+}
+
+
+Validating References with Lifetimes
+
+Ensures that references are valid for as long s we need them.
+Are implicit and referred.
+Layman’s understanding:The one with the shorter lifetime cannot be assigned the one with the longer lifetime-refer to the books illustration and code
+
+Generic Lifetimes in Functions
+
+// when using references as parameters rust needs to ensure that the reference returned is valid
+// in this case rust does not know whether the returned reference is text1 or text2 and how it relates to the two
+// hence we need to use a lifetimes
+
+fn the_longest(text1:&str,text2:&str)->&str{
+    if text1.len()>text2.len() {
+        return text1
+    }else{
+        return text2
+    }
+
+}
+
+Lifetime Annotation Syntax
+
+Lifetimes annotations don’t change how long the references live rather, they describe the relationship of the lifetimes of multiple references to each other without affecting the lifetimes.
+
+Refernce->apostrophe->space->apostrophe type
+
+& i32 - a reference
+&’a i32 - a reference with explicit lifetime 
+&’a mut i32 - a mutable reference with explicit lifetime 
+
+One lifetime annotation does not have much meaning by itself because annotations are meant to tell rust how generic lifetimes parameters of multiple  references relate to each other.
+
+Lifetime Annotations in Function Signatures
+
+We want the returned reference to be valid as long as the two parameters  are valid..
+
+We declare generic lifetime parameters in angle brackets just as we did for generic type parameters
+
+fn the_longest<‘a>(text1:&’a str,text2:&’a str)->&’a str{
+    if text1.len()>text2.len() {
+        return text1
+    }else{
+        return text2
+    }
+
+}
+This means that the function takes two parameters  which live at least as long as lifetime ‘a.
+In practise it means the lifetime of the returned reference is the same as the smaller of the lifetimes of the str referencesto understand above  check code below:fn main() {
+    let string1 = String::from("long string is long");
+
+    {
+        let string2 = String::from("xyz");
+        let result = longest(string1.as_str(), string2.as_str());
+        println!("The longest string is {}", result);
+    }
+}
+
+Result reference something that is valid until the end of the inner scope.
+
+Thinking in Terms of Lifetimes
+Lifetimes parameters needs to be related for them to work. 
+It all about connecting the reference parameters of a function and the return reference as well
+
+
+Lifetime Annotations in Struct Definitions
+ Structs define owned types but with lifetimes we can define references as well.we would need to add lifetime annotations on every reference in the struct.
+
+Struct Anotation{
+Really: &’a str,
+}
+Lifetime Elision
+Lifetimes on function or method parameters are called input lifetimes, and lifetimes on return values are called output lifetimes.
+By default the compiler can add lifetimes annotation for us hence we don’t really need to specify lifetime annotation in some function signaturehowever note there are 3 rules that the compiler uses to do this and sometimes the rules might not apply hence the compiler will throws errors in order to give us the opportunity to write the lifetime annotations ourselves.
+
+For example you donthave to annotate a parameter if it’d not related  in anyway to the return referencethere are other rules check them out, it good to know them.(they are mostly used by compiler)
+
+Lifetime Annotations in Method Definitions
+
+impl<'a> Annotation<'a> {
+    fn level(&self) -> i32 {
+        3
+    }
+}
+
+The Static Lifetime
+
+One special lifetime we need to discuss is 'static, which denotes that the affected reference can live for the entire duration of the program.
+let s: &'static str = "I have a static lifetime.";
+
+
+
+How to Write Tests
+
+Functions that verify non-test code works as expected.rust test features
+1.test attribute,
+2 macros,
+3. Should_panic attribute.
+
+The Anatomy of a Test Function
+1. assert! - test macro to check if some conditionn evaluates to true. 
+Eg assert!(6>4)
+2. assert_eq! - test macro to check for equality in the results
+Eg assert_eq!(result,40) result here is expected to be 40.
+Order of the left and right don’t matter
+3. assert_ne! - test macro to check for inequality in the results (pass is vales unequal)
+Order of the left and right don’t matterwhen the assertion fails this macros print their arguments using the debug formatting which means values compared must implement the PartialEq and Debug traits
+All primitive types and most of the std library implements this.For structs and enums that you define yourself you’ll need to implement partialEq to assert  equality of those types.You’ll also need to implement Debug  to print the values when assertion fails.
+Quite straightforward though:
+#[derive(PartialEq, Debug)]
+
+Adding Custom Failure Messages
+Custom messages will help you further understand more when your assertion fails, what the problem might be
+Any arguments passed after the required arguments will be passed along with the format macro!
+Check GitHub for more.
+ assert!(greetings("Louis").contains(name),"Greetings did not contain name,value was `{}`",greetings(name));since name is something else other than Louis this test will fail and the assert will print the extra output
+
+
+Checking for Panics with should_panic
+In addition to checking return values it’s important to check that our code handles error conditions as expected.
+The test passes if the code inside the fn panics and the test fails if the code inside the function don’t panic
+#[test]
+#[should_panic]
+fn greater_than_100() {
+        Guess::new(200);
+    }
+should_panic should be after the test attribute and before the function.
+Should panic in sometimes not precise as the text will pass whenever the code panic regardless of the reason- we should try to make it as precise as possible.
+Check GitHub for full code
+
+Using Result<T, E> in Tests
+You can’t use the should_panic attribute when using Result<T, E>
+
+Controlling How Tests Are Run
+Cargo test compiles into a resulting test binary.By default the test are run in  parralel, but we can control the behaviour of this tests using command line optionssome options are passed to cargo test before the binary and other are passed to the binarywe separate the two using a separator I.ecargo test  -- help -shows the options you can pass to cargo test.cargo test -- -- help - shows the options you can pass to the resulting binary
+
+Running Tests in Parallel or Consecutively
+By default in parallel using threads
+However you must ensure that the test s don’t depend on each other, including shared environment, such as current working directory or environmental variables.
+To prevent parallel test we can specify the test to run on a single thread as shownI.e cargo test -- -- test-threads=1
+
+Showing Function Output
+ If a test contains a println! And the test passes, we won’t see the println statement however if the test fails the we will see the println output in the terminal
+If we wan the println output to be displayed during the passed test we can add
+
+Cargo test -- -- show-output.
+
+Running a Subset of Tests by Name
+Running Single Tests
+
+Cargo test name of the test
+
+Filtering to Run Multiple Tests
+Say you have a couple test starting with the keyword add I.e (add_two, add_five , etc) you can just say cargo test add and all the test with add at the start will run.
+Cargo test addif you want to run all test in a particular module, just specify the name of the module after cargo test
+Cargo test main
+
+Ignoring Some Tests Unless Specifically Requested
+Some tests might be alittle bit time consuming hence we might not want tot run themwe can add the #[ignore] attribute after the #[test] attribute
+
+To run the ignored test we use :cargo test -- -- ignored
+
+
+Test Organization
+
+Two categories of test  
+1. Unit test- smaller at particular to one module at a time, can test private interfaces
+2. Integration tests. External to your library and use your code like any other external code, using only public interface and multiple modules at a time.
+
+Unit Tests
+Test each unit of code in isolation to determine where the code is not working as expected.
+Put the unit test in each file together with the code they are testing.
+ The convention is to create a module named tests in each file to contain the test function and annotate the module with  #[cfg(test)]
+
+The Tests Module and #[cfg(test)]
+
+#[cfg(test)] tells rust to compile and run test only when you specify cargo test not when you specify cargo build.
+This reduces compile time as well as space in the resulting articfact,because the test are not included.cfg - means configuration
+
+Testing Private Functions
+Private functions are function in a particular module.I.e we create a module named tests for each file containing our rust code that need to be tested.essentially module tests will be a child of our main module.since child modules can access items of their ancestors as shown in the module chapter we learnt  some time ago.hence we don’t need to explicitly annotate our fn with public keyword
+
+Integration Tests
+Individual parts of our code can work well  separately but have issues when required to work together with other parts and hence the need of integration tests.
+
+The tests Directory
+ To create integration test we first need tests directory, next to srccargo knows where to look for integration tests (tests dir) and we can create as many tests files as we want.each file will be compiled as its own crate.
+- Import the library into each test crate.
+- We don’t need annotation as cargo will only compile this when cargo test is run.
+When we run cargo test, rust runs 
+- Unit test 
+- Integration test
+- Doc tests.
+If any of the test fails rust won’t continue with the subsequent tests.to run integration separately you can run:cargo test -- test namefile
+Submodules in Integration Tests
+
+
+
+An I/O Project: Building a Command Line Program
+
+

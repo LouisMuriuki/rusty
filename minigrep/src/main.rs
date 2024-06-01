@@ -1,22 +1,18 @@
-use std::{env, fs};
+use std::{env, process};
+use minigrep::{Config,run};
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let config = Config::new(&args);
-    let contents = fs::read_to_string(&config.file_path).expect("should have read the file");
-    println!("Searching for {:?}", config.query);
-    println!("In file {:?}", &config.file_path);
-    println!("Contents {:?}", &contents);
-}
+    let config = Config::build(&args).unwrap_or_else(|err| {
+        print!("{}", err);
+        process::exit(2);
+    });
 
-struct Config {
-    query: String,
-    file_path: String,
-}
-
-impl Config {
-    fn new(args: &Vec<String>) -> Config {
-        let query = args[1].clone();
-        let file_path = args[2].clone();
-        Config { query, file_path }
+    println!("The query is {:?}", config.query);
+    println!("The filepath is {:?}", config.file_path);
+    if let Err(e) = run(config) {
+        println!("{:?}", e);
+        process::exit(1);
     }
 }
+
+
