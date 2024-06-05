@@ -212,7 +212,7 @@ Check github
 Methods also take ownership,borrow mutably or immutably and return ownership as wellAssociated functions
 All functions defined within an impl block are called associated functions because they’re associated with the type named after the implAssociated function are  be  defined without passing self as first parameter and hence they are not considered to be methods I.e String::from(“text”) - from is an associated function hereAssociated function are not methods,
 They are used in making constructors that return a new instance of the struct often called new, new is not a keyword in rust though
-Impl rectangle{
+Impl Rectangle{
 fn square(size:u32)-> Self{
 Self{
 Width:size,
@@ -237,7 +237,7 @@ Enums can as well hold their data
  Let six=IpAddrKind::V6(String::from(“luv”))
 
 We can use enums as well to store data in a more concise manner
-Enums allows us to store more complex data even then structs:
+Enums allows us to store more complex data even than structs:
 Enum ipAddr{
 V4(u8,u8,u8,u8),
 V6(String)
@@ -249,22 +249,22 @@ Just like in structs we can define methods on enums using the impl keyword The O
 enum Option<T>{None,
 Some(T)
 }The standard lib has a couple of predefined enums and option is one of them,- it is defined in the prelude, so there is no need to import it again
-it basically encodes a scenario where a value could be something or nothing preventing null values.
+it basically encodes a scenario where a value could be something or nothing, preventing null values.
 Rust does not have the null feature that many languages have, null means that there is no value.
 
 In rust anywhere we see Option<T> we can assume that the value will at one point have a null value,
 Likewise to use a value that might be null, we must explicitly use the Option<T> type.
 
-This ussually defined in the std lib 
-it is so usefull that it is included in the prelude, we can even use the values without the option:: prefix,,check code below
+This usually defined in the std lib 
+it is so useful that it is included in the prelude, we can even use the values without the option:: prefix,,check code below
 
 Let value=Some(5)
 Value will be of type Option<i8> and not i8- note these are two different types and hence if you try to add them etc you might get a compiler error.
 option enumeration has a large number of inbuilt methods.
 Check GitHub
 
-The match Contro flow Construct
-Allow you to compare values against series of patterns and execute code based on which pattern matches
+The match Control flow Construct
+Allows you to compare values against series of patterns and execute code based on which pattern matches
 Things you can do with match:1. Bind to values 
 2. Matching with option T to check whether the value is a None  value 
 
@@ -275,7 +275,7 @@ Extracting values from enum Variants
 Match expressions  can help achieve this, check out GitHub
 
 Match with option<T>
--say you want to check if value if available before you execute function, you can use match: check GitHub
+-say you want to check if value is available before you execute function, you can use match: check GitHub
 Match keyword followed by an expression.more like how an if statement is but the difference is that the if must result to a boolean while match can result in any type
 
 Change Option<T> to T in rust
@@ -316,7 +316,7 @@ Crate- Is the smallest amount of code that the rust compiler considers at a time
 
 Binary crate- rust code that you can compile to an executable and run (smallest hello world code is a crate it self)
 It contains a main fn that defines what’s happens when the executable runs
-Library crates - don’t compile to an executable n either do they have a main fn but rather define functionality intended to be used by multiple	projects.
+Library crates - don’t compile to an executable neither do they have a main fn but rather define functionality intended to be used by multiple	projects.
 
 But in general crate means a library as used in other languagesPackage- is a bundle of one or more crates that provides a set of functionality
 A package contains cargo.toml file that  describes how to build this crates
@@ -331,7 +331,7 @@ Defining Modules to Control Scope and Privacy
 * Inline, within curly brackets that replace the semicolon following mod garden
 * In the file src/garden.rs
 * In the file src/garden/mod.rs
-3.Declaring sub modules- can be declared in any other file part from the root crate
+3.Declaring sub modules- can be declared in any other file apart from the root crate
 * The compiler will look for the module’s code in these places:
 * Inline, within curly brackets that replace the following mod garden
 ¸¸¸¸* In the file src/garden/vegetable/zzy
@@ -391,14 +391,15 @@ use crate::front_of_house::hosting::add_to_waitlist();
 add_to_waitlist();
 It is ideally idiomatic/recommended to call a function with its parent, so that it’s clear where the function comes from. I.e
 hosting::add_to_waitlist();
-When calling other items, I.e structs, enums etc it is advisable to write the full path in the use statement
+When calling other items, I.e structs, enums etc it is advisable to write the full path in the use statement I.e:
+use std::collections::HashMap;
 It’s the way people write rust code.
 
 Providing New Names with the as Keyword
 Sometime we may have to import two items with the same name within our crate, we can use the as keyword to differentiate between	 the two
 use std::fmt::Result;
 use std::io::Result as IoResult;Re-exporting Names with pub use
-When we bring a name into scope it only available in the new scope which is private, to give the code that calls our code access to that name use can combine use and pub keywords
+When we bring a name into scope it’s only available in the new scope which is private, to give the code that calls our code access to that name use can combine use and pub keywords
 This technique is called re-exporting because we’re bringing an item into scope but also making that item available for others to bring into their scope.
 Check the book example
 
@@ -448,17 +449,19 @@ vec.push(9);
 Reading Elements of Vectors
 
 They are two ways of referencing vectors , using indexing syntax or the get method
-Let third:&<I32>=&vec[2]; //indexing
-Let third:&<I32>=vec.get(2);
+Let third:&I32=&vec[2]; //indexing
+Let third:Option<&I32>=vec.get(2);
 
 Using indexing and & will give us the reference of the index value of the vector
-Using get method retuirns Option<T>  which we can use with match to get the Some<T> and None types
-Some<T>-wiill give us the actual value,
-NOne- to handle the case of null values
-Hence here Let third:&<I32>=vec.get(2); we can’t use the &(reference) since get will return  Option<&i32> instead of &i32
+Using get method returns Option<T>  which we can use with match to get the Some<T> and None types
+Some<T>-will give us the actual value,
+None- to handle the case of null values
+Hence here :
+Let third:Option<&I32>=vec.get(2); 
+we can’t use the &(reference) since get will return  Option<&i32> instead of &i32
 Usage of these two depends on your application needs, eg if you access a non existent value with indexing the program will panic, but if you use get  you can handle null cases with None- eg if the index is a user input you can handle a case and ask them to reenter the number again.
 
-As seen we have not listed vec3 are used it, this is because vectors store items next to each other on memory and adding a new element might cause new memory allocation of the vector, as such refernce t the fisrt element or any other, might be referncing a deallocated memory I.e:let mut v =vec![1,2,3,4,5];
+As seen we have not listed vec3 are used it, this is because vectors store items next to each other on memory and adding a new element might cause new memory allocation of the vector, as such reference t the first element or any other, might be referencing a deallocated memory I.e:let mut v =vec![1,2,3,4,5];
 Let first= &vec[0];  
 V.push(6);
  println!("The first element is: {first}");
@@ -504,18 +507,18 @@ STRINGSStoring UTF-8 Encoded Text with Strings:
 Strings are implemented as a collection of bytes, and has some methods to provide functionality when those bytes are implemented as text.here we will discuss:1. operations on strings that every collection type has I.e creating , updating and reading
 2. How strings are different from other collections, namely how indexing to a string is different namely in differences between how people and machines interpret it.
 What Is a String?
-Rust has only only string type in the core language which is the string slice seen as &strstring slices are usually references to UTF-8 encoded string data stored else where;
+Rust has only one string type in the core language which is the string slice seen as &strstring slices are usually references to UTF-8 encoded string data stored else where;
  string literals are stored in the programs binary and therefore are string slices
 String type is provided by the standard library rather than being coded into the language , is a growable, mutable, owned UTF-8 encoded string type 
 Both String type and &str are UTF-8 encoded
 
 Creating a New String
-Many of the operation available for Sting are available for vector;
+Many of the operation available for String are available for vector;
 String is implemented as a wrapper around a vector of bytes with some extra guarantee, restrictions and capabilities
 Eg the new function. String::new() // Vec::new()this creates an empty String but often we wan to have some initial data, we can use this:1.to_string()- which is available to any type that implements  the display trait	
 Let s=“initial text”.to_string();
-2.String::from(“initial_tetx”);which one to choose is unto yourself, style and readability Strings are UTF-8 so they can store symbols,characters, emojis, text, etc.
-Updating a String1. concatinate with Plus operator (+) - to avoid ownership lose use a reference
+2.String::from(“initial_tetx”);which one to choose is upto yourself, style and readability Strings are UTF-8 so they can store symbols,characters, emojis, text, etc.
+Updating a String1. concatinate with Plus operator (+) - to avoid ownership lose add a reference to the concatenation values.
 2. concatinate with format!()
 3. Append a string with push_str()- does not take ownership
 4. *Push - works like push_str but only for single characters 
@@ -530,28 +533,28 @@ Concatenation with the + Operator or the format! Macro
  let s1 = String::from("Hello, ");
     let s2 = String::from("world!");
     let s3 = s1 + &s2; // note s1 has been moved here and can no longer be used
-Si is no longer valid and the reason we used a reference to s2-&s2  has to to with the signature of the method called when we use the + operator is usedit looks like :
-fn add(self, s: &str) -> String {
-We can only add &str to String and not String with Stringbut as seen we are trying to add &string to String even though the method signature says &str.this is because rust compiler can  coerce a String into a &str[..]also as add does not take ownership of s we can still use s2.we can also see that add take ownership of self as it does not have a &meaning we can ownership os s1 append a reference to s2 and return the result to s3; 
+Si is no longer valid and the reason we used a reference to s2-&s2  has to to with the signature of the method called when the + operator is usedit looks like :
+fn add(self, s: &str) -> String {}
+We can only add &str to String and not String with Stringbut as seen we are trying to add &String to String even though the method signature says &str.this is because rust compiler can  coerce a String into a &str[..]also as add does not take ownership of s parameter we can still use s2.we can also see that add take ownership of self as it does not have a &meaning we  take ownership of s1, append a reference to s2 and return the result to s3; 
 this statements looks like we are lots of copying but that is not the case, this is actually more efficient than copying your way into it.Remember above we said strings provide a little more capabilities but also restrictions.
 Format MacroThis makes appending strings much more easier to read and write, especially when concatenating multiple stringsworks exactly like the println! But on this case we return the concatinated stringas seen variables are put in {} which is wrapped by double quote notation
-format!(“{}”);
+format!(“{s1}-{s2}-{s3}”);
 
 Indexing into Strings
 If you try to index a string in rust as with other programming languages, you would get an error.
 Rust does not support indexing in string, why not ? Let understand why
-Some characters ins string take more than one byte- usually a letter will take one byte.due to this if we try to access a string value with index, it may lead upto an unexpected behaviour thus rust won’t compile.
+Some characters in string take more than one byte- usually a letter will take one byte.due to this if we try to access a string value with index, it may lead unto an unexpected behaviour thus rust won’t compile.
 
 Bytes and Scalar Values and Grapheme Clusters! Oh My!
 Another point about UTF8 is that there are three ways to looks at string from rust perspective
 -bytes
--scalar values
+-scalar values (chars)
 -Grapheme clusters-closest thing we could call letters
 As you can see rust stores string in different types so indexing would not be appropriate as there is no superior way to look at the strings
 The final reason why indexing is not possible in rust string is because indexing is expected to take constant time (O(1)). But this isn’t possible to guarantee performance in rust as rust would have to walk through contents from the beginning to the index to determine how many valid charatcters there were.
 
 Slicing Strings
- As we have seen indexing in rust might result to unexpected behaviour, and is difficult due to the three different type it can be stored as.however if you really need to index you can provide a range instead of  of [] with one number I.e
+ As we have seen indexing in rust might result to unexpected behaviour, and is difficult due to the three different type it can be stored as.however if you really need to index you can provide a range instead of an index with one number I.e
 let hello = "Здравствуйте";
 let s = &hello[0..4]; 4th item not included.
 Instead of 
@@ -575,7 +578,8 @@ Println!(“{I}”);
 }
 
 Storing Keys with Associated Values in Hash Maps
-This is the typeHashMap<K, V>store their data on the heap
+This is the type HashMap<K, V>
+Stores a mapping of  type K to values of type V using a hashing function.store their data on the heap
 All keys must have same type as each other.
 Object in JS
 Stores a mapping of keys of type K to values of type V using a  a hashing function, which determines how it places this keys and values into memory
@@ -623,7 +627,7 @@ For type that don’t implement the copy trait, pass reference instead.
 Updating a Hash Map
 There are three ways to do it:
 1.Overwriting a Value
-If we add two key values pair contains same name for the key but different values, the former will be ignored and the latter be used  as the correct value.
+If we add two key values pair that contains same name for the key but different values, the former will be ignored and the latter be used  as the correct value.
 2.Adding a Key and Value Only If a Key Isn’t Present
 Check if key exists , if not add else don’t addthere is a special Api called entry that takes the key you want to check as a parameter, the return value of entry method is an enum called Entry, that represents a value that might or might not exist.
 scores.entry(String::from(“Blue”)).or_insert(50);since we already have Blue this won’t be inserted.or_insert method on Entry returns a mutable reference to the value for the corresponding entry key if that key exists and if not, insert the parameter as the corresponding value for this key and return the reference to this new value.
