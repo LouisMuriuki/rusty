@@ -637,16 +637,19 @@ The split_whitespace method returns an iterator of string slices that are sub-
 
 Hashing Functions
 by default hash maps contain a hashing function called SipHash that can provide resistance to denial of service attacks involving hash tablesit is slower but offers better security, you can swap it out in favour of your own choice that is faster by specifying a different hasherHasher is a type that implements the BuildHasher trait.
-Error Handlingrust has a panic macro - when a program panic it will print a failure message, unwind , clean up the stack and quit.Via an env variable you can make rust display the call stack when a panic occurs to make it easier to track down the source of the panic.
-By default when program panic rust will unwind which means rust walks back up the stack and cleans data from each function it encounters,however walking back and cleaning up is a lot of work therefore rust gives you the opportunity of aborting instead-this however won’t clean up the stack.Memory that the program was using will then need to be cleaned by the operating system.
+Error Handlingrust has a panic macro - when a program panics it will print a failure message, unwind , clean up the stack and quit.Via an env variable you can make rust display the call stack when a panic occurs to make it easier to track down the source of the panic.
+By default, when program panics rust will unwind which means rust walks back up the stack and cleans data from each function it encounters,however walking back and cleaning up is a lot of work therefore rust gives you the opportunity of aborting instead-this however won’t clean up the stack.Memory that the program was using will then need to be cleaned by the operating system.
 If in your project you need to make the resulting binary as small as possible you can switch from unwinding to aborting by addingpanic=‘abort’ to the appropriate profile sections in your cargo.toml file eg
+
 [profile.release]panic= ‘abort’
 
 Using a panic Backtrace
 
 When a rust program panics, the last two lines are the most important, one shows where our program panicked and the next is a note that tells us to run with env variable RUST_BACKTRACE=1 to display a backtrace.A backtrace is a list of all functions that have been called to get to this point.
-The key to reading a backtrace is to start from the top until you see the files that you wrote, that’s the spot where the problem originatedthe lines above the spot are code that your code has called, the lines below are code that called your code.this after and before code lines might include rust code, etc lib code, crates code etc.to run a program with backtrace, we call our code as shown RUST_BACKTRACE=9 cargo run
- This will print a stack trace and we should start investing our panic a the first line we see that we wrote.the backtrace exact output will depend on the os and rust version you re using.in order to get backtraces with all this information, debug symbols must be enabled, by default debug symbols are are enabled when we run cargo run /cargo build without the release flag.
+The key to reading a backtrace is to start from the top until you see the files that you wrote, that’s the spot where the problem originatedthe lines above the spot are code that your code has called, the lines below are code that called your code.this after and before code lines might include rust code, etc lib code, crates code etc.To run a program with backtrace, we call our code as shown i.e 
+RUST_BACKTRACE=1 cargo run
+
+This will print a stack trace and we should start investigating our panic at the first line we see that we wrote.the backtrace exact output will depend on the os and rust version you’re using.in order to get backtraces with all this information, debug symbols must be enabled, by default debug symbols are are enabled when we run cargo run /cargo build without the release flag.
 Recoverable Errors with Result
 Most errors are not serious enough to require a program to panic.i.e you want to access a file but it does not exist, it does not make sense to panic but rather create the missing instead.
 The Result enum has two variants , Ok and Error as follows
@@ -655,8 +658,8 @@ Err(E)
 }
 
 The T and E are generic type parameters:T will return the type of value that will be returned in a success case within the Ok variant.E will return the type of Error that will be returned in a failure case within the Error variant.
-Because Result has these generic type parameters, we can use the Result type and the functions defined on it in many different situations where the successful value and error value we want to return may differ.Example of a function that return result type because the function could fail:use std::fs::File;
-
+Because Result has these generic type parameters, we can use the Result type and the functions defined on it in many different situations where the successful value and error value we want to return may differ.Example of a function that return result type because the function could fail:
+use std::fs::File;
 fn main() {
     let greeting_file_result = File::open("hello.txt");
 }
@@ -669,22 +672,24 @@ Ok(file)=>file,Err(error)=>panic!(“Problem opening file{:?}”,error),
 The code above will panic not matter why File::open failedhowever we want to take different action for different failure reasons.if the file doesn’t not exist we can to create a file and return the handle to the new file, else let the program panic.to do so we can add an inner match expression.refer to could_fail_handle_multiple fn in GitHubShortcuts for Panic on Error:unwrap and expect
 Using match works but it can be a bit verbose and not communicate intent well
 Result<T,E> has got various helper methods to help it accomplish  a specific task.
-Unwrap method is a shortcut for the match expression, 
+
+1. Unwrap method is a shortcut for the match expression, 
 If the Result is the Ok variant, then unwrap will return value inside the Ok.
 If the Result is the Err variant , unwrap will call the panic! Macro.
+let open_file=File::open(“rust.txt”).unwrap();
 
-Expect.expect works same as un_wrap but you have the option to specify the message passed once a panic happens unlike .un_wrap which has got a default error message
+2. Expect.expect works same as unwrap but you have the option to specify the message passed once a panic happens unlike unwrap which has got a default error message
 Propagating Errors
 When a functions implementation calls something that might fail, instead of handling the error within the function itself, you can return the error to the calling code, so that it can decide what to do.- Propagating the errorit give more control to the calling code, where there might be more information or logic that dictates how the error should be handled than what you have available in the context of your code
 Below is a function that reads a username from a file, if the file does not exist, the function returns the error to the code that called it:
 ~ Refer to propagating Errors in GitHub.
 The calling code will then handle the Ok or Err variants respectively.
-I.e in case of Err: it can panic, teach name from other file, or set a default username.
+I.e in case of Err: it can panic or do more complicated operation such as  look for file in adjacent locations,, or set a default username.
 This procedure in rust is so common that Rust provides the Question mark operator to make this easier.
 
 Shortcut for Propagating Error : The ? Operator
-The ? Placed after a result value is defined to work in almost the same way as the match expression  we defined to handle Result above:if the result is an Ok, the value inside the Ok will get returned from this expression, else the value inside Err will get returned and propagate to the calling code and terminate the program.
-One difference though between ? Operator and match is that 
+The ? Placed after a result value is defined to work in almost the same way as the match expression we defined to handle Result above:if the result is an Ok, the value inside the Ok will get returned from this expression, else the value inside Err will get returned and propagate to the calling code and terminate the program.
+One difference between ? Operator and match is that 
 Error values that have the ? Operator called on them , go through the from function defined in the From trait in the std lib.
 It is used to convert values from one type into another type.
 When the ? Operator calls the from function, the error type received is converted into the error type defined in the return type of the current functionThis is useful when a function returns one type to represent all the ways a function might fail, even if parts might fails for many different reasons.As seen the ? Operator is useful in eliminating boilerplate and makes this function implementation simpler.We can even make our code shorter by chaining  the methods calls immediately after the ? Operator

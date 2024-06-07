@@ -5,7 +5,9 @@ use std::{
 };
 fn main() {
     // panic!("crash and motherfucking burn");
-    could_fail()
+    // could_fail()
+    let v=vec![1,2,3,4,5];
+    let v10=v[99];
 }
 
 // Handling Errors with result

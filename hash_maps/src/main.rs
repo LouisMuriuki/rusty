@@ -12,15 +12,31 @@ fn main() {
 
     // // copied here will copy the variable so long as it has the copy trait else it will take ownership, we can use refernce to counter that
     // let score = scores.get(&selectedTeam).copied().unwrap_or(0); //copied will change option<&T> to Option<T> get will return Option<&T>
-                                                                 //unwrap_or- will return value of key if it exits else return new value passed to key
-                                                                 // -this can be alternative to match pattern
+    //unwrap_or- will return value of key if it exits else return new value passed to key
+    // -this can be alternative to match pattern
 
     // println!("{:?}", score);
 
     // iterateHashMaps(scores);
     // hashmap_overwrite();
     // hashmap_checkif_exists();
-    count_word();
+    // count_word();
+    fruit_basket();
+}
+
+fn fruit_basket() -> HashMap<String, u32> {
+    let fruits = "apple mango";
+    let mut basket = HashMap::new();
+
+    // Two bananas are already given for you :)
+    basket.insert(String::from("banana"), 2);
+
+    for words in fruits.split_whitespace() {
+        basket.entry(String::from(words)).or_insert(1);
+    }
+    println!("basket is {:?}", basket);
+
+    basket
 }
 
 fn iterateHashMaps(map: HashMap<String, i32>) {
@@ -56,48 +72,20 @@ fn count_word() {
     let mut map = HashMap::new();
     for word in TEXT.split_whitespace() {
         let count = map.entry(word.to_string()).or_insert(0); // count refers to a mutable refernce to the corresponding value of the Key
-        *count += 1; // dereference the mutable reference so as to avoid an invalid pointer 
-        // since count is a refernce to a value in the hashmap any change that occurs to it will affect our original value
+        *count += 1; // dereference the mutable reference so as to avoid an invalid pointer
+                     // since count is a refernce to a value in the hashmap any change that occurs to it will affect our original value
     }
     println!("{:#?}", map); // here map will contain the new values.
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 fn count_words() {
-    let word="hello world wonderful world";
-    let mut my_map=HashMap::new();
+    let word = "hello world wonderful world";
+    let mut my_map = HashMap::new();
 
-    for i in word.split_whitespace(){
-        let count=my_map.entry(i).or_insert(0);
-        *count+=1;
+    for i in word.split_whitespace() {
+        let count = my_map.entry(i).or_insert(0);
+        *count += 1;
     }
 
-    println!("{:#?}",my_map);
-
-    
+    println!("{:#?}", my_map);
 }
