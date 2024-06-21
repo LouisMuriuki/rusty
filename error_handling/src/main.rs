@@ -6,8 +6,15 @@ use std::{
 fn main() {
     // panic!("crash and motherfucking burn");
     // could_fail()
-    let v=vec![1,2,3,4,5];
-    let v10=v[99];
+    // let v = vec![1, 2, 3, 4, 5];
+    // let v10 = v[99];
+    let file = open_file();
+    println!("{:?}", file);
+}
+
+fn open_file() -> Result<String, io::Error> {
+    let file = fs::read_to_string("loius.txt")?;
+    Ok(file)
 }
 
 // Handling Errors with result

@@ -3,6 +3,11 @@ struct Point<T,U>{
     x:T,
     y:U
 }
+#[derive(Debug)]
+struct PointTest<T,E>{
+    x:T,
+    y:E
+}
  
 // generics type defination coming the struct
 impl <T,U> Point<T,U>{
@@ -17,6 +22,7 @@ impl <T,U> Point<T,U>{
 }
 
 fn main() {
+    let slope=PointTest{x:3.0,y:8};
     // let number_list = vec![34, 50, 25, 100, 65];
 
     // let result = largest(&number_list);

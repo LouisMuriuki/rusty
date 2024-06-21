@@ -714,6 +714,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 When a main function returns a Result<(),E> , The executable will exit with a value of ) if main returns Ok(()) and will exit with nonzero value if main returns an Err value.in C executables return integers when they exit; programs that exit successful return 0  while those that  error, return with any other integer 
 Rust also follows this convection.To Panic or not To panic
 
+ We should only panic when our application receives a bad state/or something unexpected happens(accassing an out of bounds memory)	 or when doing test(we won’t know if test failed unless it panics),in cases where we expect an error do to some operation or user input  it is better to return a Result<T,E>
+
 You can call panic for any error situation, however by doing this you are making a decision on behalf of the calling code whether the error is recoverable or not.You could choose to return a Result value to give the calling code options	: hence it calls panic only when the Err valuee is unrecoverable.
 In most situations we would return Result to the calling code, but in situations like as examples, prototype-codes and tests it is advised to panic instead.Examples, Prototype Code, Tests  
 
@@ -731,25 +733,26 @@ Consider code below:    use std::net::IpAddr;
 We can see that  we are parsing a hardcoded valid ip address but the will force to handle the Err variant of Result by either asking us to add expect or unwrap because the hardcoded value doesn’t change the type of the parse method.consider a situation where we are accepting the ip address as an input from the user, then our code would make much more sense to have expect  or unwrap since the user input be wrong.Guidelines for Error Handling
 It advisable to have you code panic when it’s possible your code could end up in a bad state.A bad state is when some assumption, guarantee or contract has been brokenAlso:1 BadState- is when something that is unexpected happens as opposed to something that will likely happen occasionally, like a user entering data in the wrong format.
 If someone calls your code and passes values that don’t make sense it is advisable to return an error so that the user of the library can decide what do in that case.in situations where continuing would be harmful or insecure, the best choice would be to panic and alert the user of you lib about the error so they can make the necessary fix.Similarly if you calling external code and  it returns an invalid state that you have no way to fix, calling panic is the best situation here.
-If you attempt to access an invalid data:Out of bounds memory- trying to access memory that doesn’t belong to the current data structure will cause the standard library to call panic, this protects from vulnerabilities.(accessing invalid data is the main cause of vulnerability)
+If you attempt to access an invalid data: Out of bounds memory - trying to access memory that doesn’t belong to the current data structure will cause the standard library to call panic, this protects from vulnerabilities. (accessing invalid data is the main cause of vulnerability)
 However when failure is expected, it is better to return a Result than to make a panic call.
 Example is a parser being given malformed data or a https request returning a status suggesting we have hit a rate limit. In such cases we propagate the error to the code calling it to decide how it will handle it
-Functions have contracts: their behaviour is only guaranteed only when the inputs meet a particular requirement.contract violation indicates a caller side bug and its not the kind of error you want the calling to handle, in fact the is not reasonable way for the calling to recover.
+Functions have contracts: their behaviour is only guaranteed only when the inputs meet a particular requirement.contract violation indicates a caller side bug and its not the kind of error you want the calling code to handle, in fact there is not reasonable way for the calling to recover.
 It makes sense to panic when a contract violation occurs.
 
-The rust type system does lots of the checks hence we do not need to manually do the check our selves. How? Well the parameters are typed no. if you pass other type rather than option the code knows it does not have to handle a value which can  something and nothing rather than the specified type.
-Again if you u32, this ensure what integer is passed is never negative.
+The rust type system does lots of the checks hence we do not need to manually do the check our selves. How? Well the parameters are typed no? I.e:if you pass other types rather than option<T> the code knows it does not have to handle a value which can be something and nothing rather than the specified type.
+Again if you use u32, this ensure what integer is passed is never negative.
 Creating Custom  Types for Validation
 
 We might have a program with a function that expects a number but we want it to be btw 1-100 of cos we can write an if statement to check for this condition.
 Now assume that the program, has lots of function that need to do the same checks, ofcos we can write the check for every program  but this would be a bit hard on the performance  of our app.
 
-An ideal solution for this would be to implement a custom type and put the validation in a function to create a new instance of the type rather than repeating validations everywhere.
+An ideal solution for this would be to implement a custom type and put the validation in a function to create a new instance of the type rather than repeating validations everywhere.(the associated function will have the only if statement)
 
 
-GenericsTypes, Traits and lifetimes
-
+Generic Types, Traits and lifetimes
+Generics is rust’s tool for handling duplication of concepts - (abstract stand-ins for concrete types)
 We use generics to create definitions of a function signatures or structs, which we can then use with many different concrete datatypes.	
+
 
 Why generics?prevents code duplication,
 Makes code more flexible
@@ -762,7 +765,6 @@ struct Point<T> {
     x: T,
     y: T,
 }
-
 Let tranform= Point {x:5,y:2}
 However this means that when creating an instance of the struct, the datatype of the values must be of the same type since the struct definition is generic over some type T. So if x is i32 then y must  be i32 as well.however	incase you want the values of your structure instance to be of different type that is still possible as shown 
 struct Point<T, U> {
@@ -839,8 +841,17 @@ Create an instance of the structure and call the method inside the trait impleme
 Traits as Parameters
 We can use traits to define functions that accept many different types.
 
-Notify function  calls the summarise method on its Item parameter  which is of some type that implements the summary trait.// refer to GitHub for definition of below variable you don’t understand run the code on an instance of the summary Struct otherwise the code won’t compile.
+Notify function  calls the summarise method on its Item parameter  which is of some type that implements the summary trait.
+// refer to GitHub for definition of below variable you don’t understand 
+i.epub struct AnyStruct {
+Something:whatevertype
+} 
 
+Implement Summary for AnyStruct{
+fn somemethod(&self)->String{
+} 
+run the code with a type that implements the Summary trait otherwise the code won’t compile.
+}
 pub fn notify(item: &impl Summary) {
     println!("Breaking news! {}", item.summarize());
 }
@@ -914,9 +925,9 @@ impl<T: Display + PartialOrd> Pair<T> {
 
 Validating References with Lifetimes
 
-Ensures that references are valid for as long s we need them.
+Ensures that references are valid for as long as we need them.
 Are implicit and referred.
-Layman’s understanding:The one with the shorter lifetime cannot be assigned the one with the longer lifetime-refer to the books illustration and code
+Layman’s understanding:The variable with the shorter lifetime cannot be assigned to the one with the longer lifetime - refer to the books illustration and code
 
 Generic Lifetimes in Functions
 
@@ -980,8 +991,16 @@ It all about connecting the reference parameters of a function and the return re
 Lifetime Annotations in Struct Definitions
  Structs define owned types but with lifetimes we can define references as well.we would need to add lifetime annotations on every reference in the struct.
 
-Struct Anotation{
-Really: &’a str,
+struct ImportantExcerpt<'a> {
+    part: &'a str,
+}
+
+fn main() {
+    let novel = String::from("Call me Ishmael. Some years ago...");
+    let first_sentence = novel.split('.').next().expect("Could not find a '.'");
+    let i = ImportantExcerpt {
+        part: first_sentence,
+    };
 }
 Lifetime Elision
 Lifetimes on function or method parameters are called input lifetimes, and lifetimes on return values are called output lifetimes.
