@@ -13,6 +13,10 @@ fn main() {
         println!("{:?}", e);
         process::exit(1);
     }
+    // run(config).unwrap_or_else(|e|{
+    //     dbg!(e);
+    //     process::exit(1)
+    // })
 }
 
 
