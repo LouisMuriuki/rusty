@@ -31,7 +31,7 @@ impl Inventory {
     }
 }
 
-fn main() {
+fn inventory_main() {
     let store = Inventory {
         shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
     };
@@ -49,4 +49,17 @@ fn main() {
         "The user with preference {:?} gets {:?}",
         user_pref2, giveaway2
     );
+}
+
+fn test_closures() {
+    let example_closure = |x| x;
+    let louis = "Louis";
+    let output = example_closure(String::from(louis));
+
+    println!("{:?}", output)
+}
+
+fn main() {
+    // inventory_main()
+    test_closures()
 }

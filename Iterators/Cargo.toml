@@ -1,6 +1,5 @@
-workspace = { members = ["Iterators"] }
 [package]
-name = "closures"
+name = "Iterators"
 version = "0.1.0"
 edition = "2021"
 

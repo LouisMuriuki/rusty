@@ -224,6 +224,8 @@ Height:size,
 
 Enums and pattern matching
 Enums allow you to define a type by enumerating its possible values.
+You can also use enums to store related data.
+As well as store data in. More concise manner.
 Values inside an enum should begin with capital letters
 
 enum IpAddrKind{V4,
@@ -234,7 +236,7 @@ IpAddrKind - becomes a custom datatype that we can use
 We can create instances as follows:
 Let four=IpAddrKind::V4
 Enums can as well hold their data
- Let six=IpAddrKind::V6(String::from(“luv”))
+Let six=IpAddrKind::V6(String::from(“luv”))
 
 We can use enums as well to store data in a more concise manner
 Enums allows us to store more complex data even than structs:
@@ -265,7 +267,7 @@ Check GitHub
 
 The match Control flow Construct
 Allows you to compare values against series of patterns and execute code based on which pattern matches
-Things you can do with match:1. Bind to values 
+Things you can do with match:1. Bind to values (help in extracting values from enumerated variants)	
 2. Matching with option T to check whether the value is a None  value 
 
 List match keyword followed by an expression , followed by  arms: have two parts (pattern and some code) i.e(coin::Penny) and the  => operator with separates the pattern , then followed by code -check GitHub
@@ -285,7 +287,7 @@ We can use the match expression to do the conversion as below:  let optional_fiv
     };
 Notice at none I returned zero, this will depend on you and how you want to work with your data.
 Matches are exhaustive:we must exhaust every last possibility in order for the code to be valid. 
-- they won’t compile if you have not covered all possible values, I.e won’t compile if you check for some(I) only when the type is of Option<T> (you have left out None and the compile knows that)this addresses the billion dollar mistake of having null values in our code.catch all patternusing the match expression on enums we can perform special functions on some values and one for the rest (catch-all). check GitHubthis ensures that the match expression id exhaustive and handles and cases avoiding the billion-dollar mistake we are trying to evade in the first place.
+- they won’t compile if you have not covered all possible values, I.e won’t compile if you check for some(I) only when the type is of Option<T> (you have left out None and the compiler knows that)this addresses the billion dollar mistake of having null values in our code.catch all patternusing the match expression on enums we can perform special functions on some values and one for the rest (catch-all). check GitHubthis ensures that the match expression id exhaustive and handles and cases avoiding the billion-dollar mistake we are trying to evade in the first place.
 For The catch all we can use the specific value passed to the function executing our match and these value will bind to the value of the specific enum variant should the pattern matchAlternatively we could use the inbuilt catch_all (_).
 It will however not bind to the value of the resulting variant of the enum.
 IF LET
@@ -434,7 +436,7 @@ Collections in rust are data structures that store multiple values, unlike array
 Storing Lists of Values with Vectors
 Allows us to store more than one value in a single data structure next to each other in memory
 To create a vector we can  use the Vector::new() function or using the vec!
-    let v: Vec<i32> = Vec::new(); //here you have to give the type
+ let v: Vec<i32> = Vec::new(); //here you have to give the type
 The Vec<T> can hold any typewhen we create a vector and pass a value to it , rust can infer the type from the value so we rarely have to type it.
 However if you create an empty vector you must explicitly type it since rust can’t infer it.
 Rust has a vec! Macro which will create a new vector that holds the value you give it.
@@ -926,7 +928,7 @@ impl<T: Display + PartialOrd> Pair<T> {
 Validating References with Lifetimes
 
 Ensures that references are valid for as long as we need them.
-Are implicit and referred.
+Are implicit and referred.z
 Layman’s understanding:The variable with the shorter lifetime cannot be assigned to the one with the longer lifetime - refer to the books illustration and code
 
 Generic Lifetimes in Functions
@@ -1001,15 +1003,20 @@ fn main() {
     let i = ImportantExcerpt {
         part: first_sentence,
     };
-}
+}	
 Lifetime Elision
 Lifetimes on function or method parameters are called input lifetimes, and lifetimes on return values are called output lifetimes.
 By default the compiler can add lifetimes annotation for us hence we don’t really need to specify lifetime annotation in some function signaturehowever note there are 3 rules that the compiler uses to do this and sometimes the rules might not apply hence the compiler will throws errors in order to give us the opportunity to write the lifetime annotations ourselves.
+Here they are :
+1. Each parameter gets its own lifetime.
+  2. If there is exactly one input lifetime parameter, that lifetime is assigned to all output lifetime parameters
+  3. If there are multiple input lifetime parameters, but one of them is &self or &mut self because this is a method, the lifetime of self is assigned to all output lifetime parameters.
 
-For example you donthave to annotate a parameter if it’d not related  in anyway to the return referencethere are other rules check them out, it good to know them.(they are mostly used by compiler)
+For example you don’t have to annotate a parameter if it’d not related  in anyway to the return referencethere are other rules check them out, it good to know them.(they are mostly used by compiler)
 
 Lifetime Annotations in Method Definitions
 
+When we implement methods on a struct with lifetimes
 impl<'a> Annotation<'a> {
     fn level(&self) -> i32 {
         3
@@ -1028,7 +1035,7 @@ How to Write Tests
 Functions that verify non-test code works as expected.rust test features
 1.test attribute,
 2 macros,
-3. Should_panic attribute.
+3.Should_panic attribute.
 
 The Anatomy of a Test Function
 1. assert! - test macro to check if some conditionn evaluates to true. 
@@ -1036,7 +1043,7 @@ Eg assert!(6>4)
 2. assert_eq! - test macro to check for equality in the results
 Eg assert_eq!(result,40) result here is expected to be 40.
 Order of the left and right don’t matter
-3. assert_ne! - test macro to check for inequality in the results (pass is vales unequal)
+3. assert_ne! - test macro to check for inequality in the results (pass is values are unequal)
 Order of the left and right don’t matterwhen the assertion fails this macros print their arguments using the debug formatting which means values compared must implement the PartialEq and Debug traits
 All primitive types and most of the std library implements this.For structs and enums that you define yourself you’ll need to implement partialEq to assert  equality of those types.You’ll also need to implement Debug  to print the values when assertion fails.
 Quite straightforward though:
@@ -1052,13 +1059,30 @@ Check GitHub for more.
 Checking for Panics with should_panic
 In addition to checking return values it’s important to check that our code handles error conditions as expected.
 The test passes if the code inside the fn panics and the test fails if the code inside the function don’t panic
+
+struct Guess {
+    value: i32,
+}
+
+impl Guess {
+    fn new(some_number: i32) {
+        if some_number < 5 {
+            panic!("less than one")
+        } else {
+            println!("not less than one")
+        }
+    }
+}
+
+…
 #[test]
 #[should_panic]
 fn greater_than_100() {
         Guess::new(200);
     }
 should_panic should be after the test attribute and before the function.
-Should panic in sometimes not precise as the text will pass whenever the code panic regardless of the reason- we should try to make it as precise as possible.
+Should_panic passes when the the panic macro is run and fails if no panic macro is run 
+Should panic is sometimes not precise as the text will pass whenever the code panic regardless of the reason- we should try to make it as precise as possible.
 Check GitHub for full code
 
 Using Result<T, E> in Tests
@@ -1131,4 +1155,111 @@ Submodules in Integration Tests
 
 An I/O Project: Building a Command Line Program
 
+Writing Error Messages to Standard Error Instead of Standard Output
+cargo run > output.txt -> This tells the shell to print the the standard output contents to the output.txt file,however if we run this we might get some of the error messages printed out by println! In the filewe should instead	 print to the standard error for error messages and standard output for successful data
+We do this by using eprintln! For standard error and println! For standard output.
 
+
+Functional Language Features: Iterators and Closures
+
+Closures
+Anonymous functions you can save in a variable or pass as arguments to other functions.
+user_preference.unwrap_or_else(|| self.most_stocked())- closure with no arguments, no value in between the ||
+
+Capturing the Environment with Closures
+Closures unlike normal functions can capture their environment
+Check code.
+
+Closure Type Inference and Annotation
+ Diff btw closures and functions:
+1.closures don’t require you annotate the type of the parameters or the return value.
+-because functions are stored in an exposed interface to your users and hence everyone needs to agree on what the particular type of a  value the functions uses and returns. Closures aren’t used in an exposed interface.
+2. Closures are typically short and relevant only within a narrow context rather than an arbitrary scenario.-compiler can infer the types in this limited contexts, though some times type annotations may be needed.
+3. Closures can capture their environments unlike in functionswe can add type annotations for more clarity as seenlet expensive_closure=|num:u32|->u32{println!(“calculating slowly…”);thread::sleep(Duration::from_secs(2));num} closure body has only one expression so one can remove the curly brackets(in one liners I think)
+the compiler can only infer one concrete type for each of the parameters and their return value.for example the code below won’t compile because  it was already annotated as a String:
+    let example_closure = |x| x;
+    let s = example_closure(String::from("hello"));
+    let n = example_closure(5);
+
+
+Capturing References or Moving Ownership
+
+Closures can capture values from their environment  in three ways, which directly map to the three ways a function can take parameter:1. Borrowing immutably
+2. Borrowing mutably
+3. Taking ownershipThe closure decides which of these to use based on what the body of the function does with the captured values.
+Closures can also bind to a variable and we can call the closure by  adding parenthesis to the variable name just as in function names.
+
+To force closure to take ownership despite its body not needing to we can use the keyword move before the parameter list. I.e:
+move || println!("From thread: {list:?}”)
+This technique is mostly useful when passing a closure to a new thread to move the data so its owned by the new thread:
+
+use std::thread;
+
+fn main() {
+    let list = vec![1, 2, 3];
+    println!("Before defining closure: {list:?}");
+
+    thread::spawn(move || println!("From thread: {list:?}"))
+        .join()
+        .unwrap();
+}
+
+There is guarantee among which of the new thread or main thread will finish executing first and drop it values, hence we cannot pass a reference of data  to the new thread from the main thread as the data might have been dropped when main finishes before new thread.
+
+Moving Captured Values Out of Closures and the Fn Traits
+A closure body can do any of the following:1. Move a captured value out of a closure
+2.mutate the captured value
+3.neither move nor mutate the value.
+4.capture nothing from the environment.
+
+Closures automatically implement one or more of these traits:1.FnOnce-applies to closures that can be called once.
+All closures implement this trait since they can be calledif a closure moves out the captured value then that means the closure can only implement this trait. 
+Closures that move the captured values out of its body will only implement FNOnce and none of the other traits, because it can only be called once.
+2.FnMut-Applies to closures that don’t move captured values out of their body but might mutate the captured values.3. Fn-Applies to closures that neither move nor mutate captured values, as well as those that capture nothing from the environment.this closures can be called more than once without mutating their environments.impl<T> Option<T> {
+    pub fn unwrap_or_else<F>(self, f: F) -> T
+    where
+        F: FnOnce() -> T
+    {
+        match self {
+            Some(x) => x,
+            None => f(),
+        }
+    }
+}
+
+Functions also implement all three of the Fn traits too.if what we want to do does not require capturing a value from the environment, we can use the name of the function rather than a closure.
+I.e we can do this: instead of a closure, to get a new empty vector if the value is None.
+unwrap_or_else(Vec::new);
+
+Processing a Series of Items with Iterators
+
+Iterators allow you to perform some task on a sequence of items in turn.
+In rust iterators are lazy, meaning the have no effect until you call the method that consumes the iterator,
+I.e this function by itself won’t do a thing, it will just create an iterator and store in a variable  let v1 = vec![1, 2, 3];
+
+  let v1_iter = v1.iter();
+To use it we would have to do something like this 
+
+for value in v1.iter(){println!(“{}”,value);
+}
+
+For example writing a for loop , implicitly creates then consumes the iterator
+
+The Iterator Trait and the next Method
+All iterators implement a trait known as Iterator. Here is the implementation:
+
+pub trait Iterator {
+    type Item;
+
+    fn next(&mut self) -> Option<Self::Item>;
+
+    // methods with default implementations elided
+}
+New syntax: type Item and Self::item are Associated types which we will learn in chapter 19.
+Basically the Item type will be the type returned from the next method.
+The next method returns one items at a time wrapped in Some and None when iteration is over.
+The next method can be called on iterators directly.
+Note: Calling the next method on an iterator changes its internal state(to keep track of where it is in the sequence), so the iterator needs to mutable.
+In the for loop above we didn’t need to make the iterator mutable since the for loop takes ownership, making the iterator mutable by default.
+
+Values we get from the calls to next are immutable references to the values in the vec.if we want an iterator that takes ownership and returns owned values, we can call the into_iter instead of itersimilar if we want to iterate over mutable references we can call iter_mut
