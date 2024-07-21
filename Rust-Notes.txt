@@ -818,11 +818,11 @@ One thing though, we can have a method that will only work with instance of the 
 Generics don’t relly affect the runtime speeds of your code due to monomorphization of the code.this is the process of turning generic types to concrete types that are used when compiled
 
 Traits: Defining Shared Behavior
-A trait defines functionality a particular type has and van share with other types,A way of grouping types together by the methods we call on them*Types behaviour consists of the methods we can call on that type.
+A trait defines functionality a particular type has and can share with other types,A way of grouping types together by the methods we call on them*Types behaviour consists of the methods we can call on that type.
 Different types share the same behaviour if we call the same methods on all of those types.trait definitions are a way to group method signatures together to define a set of behaviours necessary to accomplish some purpose.
  Trait example 
 
-pub trait summary{fn summariza(&self)->String;
+pub trait summary{fn summarize(&self)->String;
 }
 
 Make the triait public so as to make it accessible so crates depending on this crate can access to as well,
@@ -833,13 +833,22 @@ Check GitHub.
 
 Trait -type restrictions:
 
-Note :We can implement std lib traits like Display on our own custom types 
+Note :
+We can only implement a trait ton a type only if one of the trait or type is local to our crateWe can implement std lib traits like Display on our own custom types 
 We can use our own traits on external typeswe can’t implement external traits on external types.
 This is enforced by the Orhan rule, this ensures other people code doesn’t break your own and vice versa
 Default Implementations
-Sometimes it’s useful to have default behaviour for some or all of the methods in a trait instead of requiring implementations for all methods on every type.here we define the struct, define a trait and the method inside it(including body) then implement the trait on the struct, the implementation block will be empty 
+Sometimes it’s useful to have default behaviour for some or all of the methods in a trait instead of requiring implementations for all methods on every type.we can then override each methods behaviour while implementing it on a particular type.here we define the struct, define a trait and the method inside it(including body) then implement the trait on the struct, the implementation block will be empty I.e:impl Summary for tweet{}
 Create an instance of the structure and call the method inside the trait implementing the struct
+Default implementations can call other methods in the same trait, even if those other methods don’t have a default implementation.
 
+Pub trait Summary{
+Fn summarize_author(&self)->String;
+
+Fn summarize(&self)->String{format!(“author is {}”, new_article.summarize()}
+}
+
+}
 Traits as Parameters
 We can use traits to define functions that accept many different types.
 
@@ -1257,9 +1266,204 @@ pub trait Iterator {
 }
 New syntax: type Item and Self::item are Associated types which we will learn in chapter 19.
 Basically the Item type will be the type returned from the next method.
-The next method returns one items at a time wrapped in Some and None when iteration is over.
+The next method returns one item at a time wrapped in Some and None when iteration is over.
 The next method can be called on iterators directly.
 Note: Calling the next method on an iterator changes its internal state(to keep track of where it is in the sequence), so the iterator needs to mutable.
 In the for loop above we didn’t need to make the iterator mutable since the for loop takes ownership, making the iterator mutable by default.
 
 Values we get from the calls to next are immutable references to the values in the vec.if we want an iterator that takes ownership and returns owned values, we can call the into_iter instead of itersimilar if we want to iterate over mutable references we can call iter_mut
+
+Methods that Consume the Iterator
+The Iterator trait has a bunch of methods provided by the default implementation from std lib.Some of these methods call the next method in their definition, which is why you are required to implement the next method when implementing the Iterator trait.Methods that call next are called consuming adapters.an example is sum method, which takes ownership of the iterator and iterates through the items by repeatedly calling next, thus consuming the iterator.Doing so it adds each item into a running total and returns the total when iteration is complete.
+ #[test]
+    fn iterator_sum() {
+        let v1 = vec![1, 2, 3];
+
+        let v1_iter = v1.iter();
+
+        let total: i32 = v1_iter.sum();
+
+        assert_eq!(total, 6);
+    }
+We can’t use v1_iter again since sum takes ownership.
+
+Methods that Produce Other Iterators
+Iterator adapters are methods defined on the iterator trait that don’t consume the iterator, instead they produce iterators by changing some aspect of the original Iterator. E.g map method.Map takes a closure to call on each item as the items are iterated through.it returns a new iterator that produces the modified items. I.e add one
+Let v1=vec![1,2,3];
+let v1_iter=v1.iter().map(|x|x+1);
+
+However this code won’t work because iterator adapters are lazy and we need to consume the iterator.we can do so by using the collect method, it consumes the iterator and collects the resulting value into a vector. As shown
+Let added_vec=v1.iter().map(|x|x+1).collect();
+
+Using Closures that Capture Their Environment
+
+Many iterator adapters take closures as arguments, and commonly the closures well specify as arguments to the iterator adapters capture their environment.
+#[derive(PartialEq, Debug)]
+struct Shoe {
+    size: u32,
+    style: String,
+}
+fn shoes_in_size(shoes: Vec<Shoe>, shoe_size: u32) -> Vec<Shoe> {
+    shoes.into_iter().filter(|s| s.size == shoe_size).collect()
+}
+into_iter- takes ownership of the vec
+
+Comparing Performance: Loops vs. Iterators
+
+Iterators although a high level abstraction, generally perform slightly better than loops,this is because of the zero-cost abstraction, which means the abstraction imposes no runtime overhead.
+
+
+
+
+Customizing Builds with Release Profiles
+Release profiles are customisable and predefined profiles with different configuration that allow programmer to have lots of option when compiling code.
+
+Dev:cargo build
+Release: cargo build —release
+
+Each profile has defaults settings but can be changed in the cargo.toml file I.e
+
+[profile.dev]
+opt-level=0
+
+[profile.release]
+opt-level=3
+
+Publishing a Crate to Crates.io
+Crates.io- A crates registry where we can share code by publishing your own package.
+
+Making Useful Documentation Comments
+Accurately documenting your code will help other users know how and when to use them. Use //
+Rust has another kind of comment for documentation  known conveniently as a documentation comment, that generates HTML documentation.The HTML displays the contents for public API items intended for programmers interested in knowing how to use your crate as opposed to how your crate is implemented.
+The use three slashes and support markdown notation for formatting the text.
+/// Adds one to the number given.
+///
+/// # Examples
+///
+/// ```
+/// let arg = 5;
+/// let answer = my_crate::add_one(arg);
+///
+/// assert_eq!(6, answer);
+/// ```
+pub fn add_one(x: i32) -> i32 {
+    x + 1
+}
+
+We can generate the HTML documentation from this document by running cargo doc.this will run the rustic tools and puts the generated HTML documentation in the target/doc directory.
+
+For convenience running cargo doc —open will build the HTMl for your current crate’s documentation as well as documentation for all your crates dependancies and open result in a web browser.
+
+Commonly Used Sections
+We used # Examples Markdown heading in listing 14-1 to create a section in html with the title Examples,other commonly used sections:-PanicsThe scenarios in which the function being documented could panic.-Errorsif the function returns a result describing the kinds of errors that might occur and what conditions might cause those errors returned can be helpful.-Safetyif the function is unsafe to call, there should be a section explaining why?
+
+Documentation Comments as Tests
+Adding code blocks in your documentation comments can help demonstrate how to use your library, and doing so has an additional bonusrunning cargo test will run the code examples as tests
+
+Commenting Contained Items
+//!- adds documentation to the item that contains the comments rather than to the items following the comments,used typically inside the crate root file (src/lib.rs) or inside a module to document the crate or module as a whole.
+Useful for describing crates and modules especially
+
+Exporting a Convenient Public API with pub use
+
+Say we made a crate named art, inorder for our clients to use that crate items I.e structs and fns, they would need to bring them into scope via use statements as shown i.estruct
+use::art::kinds::primaryColorfnuse::art::utils::mixcheck GitHub for more:
+they would need to be slightly conversant with the crate hierarchy in order to know what to import and how to import correctly
+Also when we run cargo doc on the front page of the crate documentation we don’t get to see the re-exports
+However rust has a trick to remove the internal organisation from the public API by using pub use to re-export items to the top-leveli.e :pub use self::kinds::primaryColor
+pub::use::self::utils::mixthis time if we run cargo doc our users can see the re-exports from the front-page making it easier to use our code.
+Also this will re-export to the top level such that they can import items from the art crate as use art::mix
+
+Incases where there are nested modules , re-exporting the types at the top level can make a significant difference in how users use your crate.gives more flexibility,
+
+Setting Up a Crates.io Account
+
+Adding Metadata to a New Crate
+Before packaging a crate you have to add some metadata in the package section of the crates cargo.toml file
+
+[package]
+name=“guessing game”. //uniquedescription and license are required so people know what your crate does and under what term they can use it.if you try to run cargo publish without them it will fail
+ Here is how a complete crate with metadata should be :[package]
+name = "guessing_game"
+version = "0.1.0"
+edition = "2021"
+description = "A fun game where you guess what number the computer has chosen."
+license = "MIT OR Apache-2.0"
+
+Publishing to Crates.io
+
+Once you have an account and Api key and all metadata ready, you can now publish to crates.ioa publish is permanent and cannot be overwritten nor deleted.
+
+Publishing a New Version of an Existing Crate
+ Change the version number in cargo.toml file then republish
+Use semantic Versioning rules to decide what an appropriate next version would be based on your changes (rust book)
+
+Deprecating Versions from Crates.io with cargo yank
+Although you can’t remove previous versions of a crate, you can prevent any future projects from adding them as a new dependency
+To yank  run:cargo yank --vers 1.0.1. (version number to yank)
+To undo yank cargo yank --vers 1.0.1 --undo
+Cargo Workspaces
+as you build your lib crate you might find that it continues to become bigger and bigger, cargo has a feature that can help you break down the crate into multiple crates and develop in tandem.
+Creating a Workspace
+Is a set of packages that share the same	 cargo.lock and output directory.we start by creating a workspace directory say add:mkdir add 
+in the add workspace dir we create a cargo.toml file to configure the workspace.it won’t have a [package] section instead it will have a [workspace] section.it will allows us to add members to the workspace by specifying the path to the package with our binary crate; in this case the path is adder,
+I.e 
+[workspace]
+
+members = [
+    "adder",
+]
+So now we create the adder binary crate by running cargo new adder within the add directory.at this point we can build the workspace by running cargo build
+The target directory will be generated in the add directory not inside the adder directory, even if we run cargo build inside the adder directory, this is to ensure the crate in the workspace depend on each other and avoid unnecessary rebuilding.Creating the Second Package in the Workspace
+Edit your cargo.toml file [workspace]
+
+members = [
+    "adder",
+    "add_one",
+]
+
+Then generate the lib crate:
+cargo new add_one --lib
+
+Now to have our binary (adder) depend on the lib crate (add_one), we can add [dependencies]
+add_one={path =“../add_one”}
+Cargo doesn’t assume that crates in a workspace depend	on each other, we have to be explicit.now to use the add_one fn in add_one crate, import as shown use::add_one::add_one
+add_one(5);
+
+To build the whole workspace we do; in the top level;
+Cargo build 
+to run a specific crate we use:cargo run -p adder
+
+Depending on an External Package in a Workspace
+
+Notice that the project has only one cargo.lock file at the top level, this ensures that all crates use the same version of dependencies,
+
+Lets add the rand crate to the add_one/crgo.toml in the dependencies section 
+
+[dependencies]
+rand=“0.8.5”
+We can now use rand in the add_one/src/lib.rs and use cargo build to build whole workspace,
+
+However we can’t use it in another crate in the workspace until we add it to the crates cargo.toml file, we will get an error
+
+This will also update the info on the cargo.lock file in the top-level,
+
+Adding a Test to a Workspace
+Let’s add a test to the add_one lib crate function.now run cargo run on the top level directory, this will run tests for all crates,we can run tests separately  as well, by specifying the -p and the name of the crate as shown:
+Cargo test -p add_onesimilary to publish the packages in a workspace we would need to do so individually,
+i.e cargo publish -p add_one
+
+Use workspace as your project grows.
+
+Installing Binaries with cargo install
+
+Cargo install allows you to install and use binary crates locally,you can only installl crates that have a binary target.- a runnable  program that is created if the crate has a src.main.rs file.once you install the package, the second last line shows the location of the crate,
+Make sure the location is under the PATH  variable to be able to run the crate,I.e cargo install ripgrep
+
+To use ripgrep:rg —help
+
+Extending Cargo with Custom Commands
+
+
+Smart Pointers
+
