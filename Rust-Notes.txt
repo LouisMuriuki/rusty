@@ -1465,5 +1465,164 @@ To use ripgrep:rg —help
 Extending Cargo with Custom Commands
 
 
-Smart Pointers
+Smart Pointers (Introduction)
+Pointer is a general concept for a variable that contains an address in memory
+Most common kind of pointer in rust is a reference,
+Smart pointers are data structures that act like a pointer but have additional metadata and capabilities,
+References only borrow data while in many cases smart pointers own the data they point to,examples of smart pointers=>Vec<T>, String ; because they own some memory and allow you to manipulate it.Smart pointers are implemented using Structs,they implement the Derek and Drop traits.Deref allows an instance of a smart pointer to behave like a reference, so you can write your code to work with both,
+DropAllows you to customise the code thats’s run when an instance of the smart pointer goes out of scope,
+Examples of smart pointers:
+Box<T>-for allocating values on the heap,
+Rc<T> a reference counting type that enables multiple ownership,
+Ref<T> and RefMut<T> accessed through RefCell<T>- a type that enforces the borrowing rules at runtime instead of compile time
 
+Interior Mutability- A pattern where an immutable type exposes an API for mutating and interior value.
+
+Using Box<T> to Point to Data on the Heap
+
+Most straightforward smart pointer is a box
+Boxxes allow you to store data on the heap rather than stack., what remains on the stack is a pointer to the heap data,
+When to use them?
+-when you have a type whose size can’t be known at compile time and you want to use a value of that type in a context that requires an exact size,-when you have a large amount of data and you want to transfer ownership but ensure the data won’t be copied when you do so,
+-when you want to own a value and you only care its a type that implements a particular trait rather than being of a specific type.
+
+Using a Box<T> to Store Data on the Heap
+ Syntax and how to interact with values stored within a Box<T>
+fn main() {
+    let b = Box::new(5);
+    println!("b = {b}");
+}
+Box will be stored on the stack but the data it points to will be in the heap,when both goes out of scope it will be deallocated	,
+
+Enabling Recursive Types with Boxes
+A value of a recursive type can have another value of the same type as part of itself,
+Recursive types pose an issue because at compile time rust needs to know how much space a type takes up, nesting of recursive types could theoretically continue infinitely, so rust might not know how much space the value needs .because boxes have a known size, we can enable recursive types by inserting a box in the recursive type defination.i.e let’s explore the cons list(a data type found commonly in functional programming),
+
+More Information About the Cons List
+Is a data structure that comes from LISP programming language and is made up of nested pairs, and is the lisp version of linked list.its name comes from cons function(construct function) in Lisp that constructs a new pair from its two arguments.by calling cons on a pair consisting of a value and another pair, we can construct cons list made up of recursive pairs
+Pseudocode representation of a cons list contains the list 1,2,3 each pair in parentheses.
+(1, (2, (3, Nil)))
+
+Each item in a cons list contains two elements; the value of the current item and the next item.the last items in the list contains only a value called NIL without a next Item.A cons list is produced ny recursively calling the cons function.
+Here is an enum defination of a cons listenum List {
+    Cons(i32, List),
+    Nil,
+}
+
+Using the List store the values 1,2,3 would look like this :use crate::List::{Cons, Nil};
+
+fn main() {
+    let list = Cons(1, Cons(2, Cons(3, Nil)));
+}
+
+The first cons list hold 1 and another cons list, the list value here is another cons value that holds 2and another list value,this list value is one more Cons value that holds 3 and a list value, which finally holds Nil, the non-recursive variant that signals the end of the list.
+
+However if we try to compile we get an error that this type “has infinite size”,
+This is because the list holds another value of itself recursively, so rust can’t figure out how much space it needs to store the list.
+Let look at how rust computes the space required for a non-recursive type.
+
+Computing the Size of a Non-Recursive Type
+ Remember this enum ?enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+To determine the space the enum needs, rust goes through each of the variant to see which variant needs the most space.Because only one variant will be used, the most space Message will need is the space it would take to store the largest of its variants.
+
+
+Contrast this to when rust tries to determine the space a recursive type needs.The compiler starts by looking at the Cons variant which holds an i32 and a list,Therefore Cons needs an amount of space equal to size of an i32 plus size of list.to figure out the size of the list the complier looks at its variants, starting with the Cons variant which holds  an I32 value  and a value of type list and this goes on infinitely
+
+Using Box<T> to Get a Recursive Type with a Known Size
+
+Because rust can’t figure out the size to allocate for recursive type, it suggest in the error message we use indirection.
+“indirection” means that instead of storing a value directly, we should change the data structure to store the value indirectly by storing a pointer to the value instead.A pointers size doesn’t;t change based on amount of data its pointing too.we can then put the Box<T> inside the cons variant instead of another list value directly.the Box<T> will point to another list value that will be on the heap rather than inside a Cons variant,we will still have lists holding other lists but the implementation  is more like placing the items next to one another.this will look like belowenum List {
+    Cons(i32, Box<List>),
+    Nil,
+}
+
+use crate::List::{Cons, Nil};
+
+fn main() {
+    let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+}
+
+By using a box, we’ve broken the infinite, recursive chain, so the compiler can figure out the size it needs to store a List value
+Boxes provide only the indirection and heap allocation; they don’t have any other special capabilities,
+
+Treating Smart Pointers Like Regular References with the Deref Trait
+
+Implementing the Derek trait allows you to customise the behaviour of the dereference operator
+By implementing Derek in such a way that a smart pointer can be treated like a regular reference allows us to write code that operates on references and use that code with smart pointers too.
+
+Following the Pointer to the Value
+A regular reference is a type of pointer (points to data stored somewhere in memory)
+
+fn main() {
+    let x = 5;
+    let y = &x;
+
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
+}
+Y being a reference to the x value, if we want to assert that 5 is equal to the value of held be Y, we must use the dereference operator to follow the value it is pointing to.
+
+Using Box<T> Like a Reference
+We can rewrite this to use a box instead
+
+let x = 5;
+ley y = Box::new(x)
+
+assert_eq!(5, x);
+assert_eq!(5, *y);
+
+Y is an instance of Box, which points to a copied value of x rather than a reference of pointing to the x value.
+
+Defining Our Own Smart Pointer
+Lets Build our own smart pointer(MyBox) like Box<T> so that we can understand how smart pointers operate differently from references.
+
+Box<T> - is a a tuple struct with one element
+
+struct MyBox<T>(T);
+
+impl<T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+If we substitute the above Box for MyBox, the code won’t compile, this is because rust doesn’t know how to deference the MyBox struct.we haven’t implemented the ability for it to perform dereferencing, and we do this by implementing Deref trait.
+
+Treating a Type Like a Reference by Implementing the Deref Trait
+
+Use::std::ops::Deref;
+
+impl <T> Deref for MyBox<T>{type Target = T;
+
+Fn deref(&self)->Self::Target{&self.0
+}}
+
+type Target = T defines an associated type for the Defer trait to use.
+Self.0 = accesses the first value in a tuple struct.
+Behind the scenes rust actually run this code*(y.deref())
+Without the deference trait, the compiler can only dereference references.
+If the deref method is supposed to return a reference to the value, why then do we need a deference operator outside the parenthesis?*(y.deref())
+This is because we don’t want to take ownership of the value returned, since this would mean the value would be moved out of self
+
+Implicit Deref Coercions with Functions and Methods
+Deref coercion- Converts a reference to a type that implements the Deref trait into a reference to another type.
+I.e converts &String to &str because String implements the Deref trait such that it returns &str.
+Deref coercion is a convinience rust performs on arguments to functions and methods and works only on types that implement the Deref trait.
+It happens automatically when we pass a reference to a particular types values as an argument to a function and it does not match the parameter type in the function definition.
+It also lets us write more code that can work for references as well as smart pointers.
+Again it prevents us from manually derefencing because we would need to use all this symbols which make our code hard to read and write.
+
+How Deref Coercion Interacts with Mutability
+
+We can use DerefMut trait to override the * glob operator on mutable references.
+Rust does deref coercion when it finds types and trait implementations in three cases:
+* From &T to &U when T: Deref<Target=U>
+* From &mut T to &mut U when T: DerefMut<Target=U>
+* From &mut T to &U when T: Deref<Target=U>
+* 
+Rust will also coerce a mutable reference to an immutable one. But the reverse is not possible: immutable references will never coerce to mutable references. Because of the borrowing rules, if you have a mutable reference, that mutable reference must be the only reference to that data (otherwise, the program wouldn’t compile).
