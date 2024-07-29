@@ -1626,3 +1626,28 @@ Rust does deref coercion when it finds types and trait implementations in three 
 * From &mut T to &U when T: Deref<Target=U>
 * 
 Rust will also coerce a mutable reference to an immutable one. But the reverse is not possible: immutable references will never coerce to mutable references. Because of the borrowing rules, if you have a mutable reference, that mutable reference must be the only reference to that data (otherwise, the program wouldn’t compile).
+
+
+Running Code on Cleanup with the Drop Trait
+Drop is the trait that lets you customise what happens when a value is about to go out of scope.
+Can be used to release resources like files and network issues.
+It is almost always used when implementing a smart pointer, I.e when Box<T> is dropped it deallocates all the space on the heap that box points to.
+To avoid memory leaks, in some languages, for some types, programmers must call code to free up resources when they finish using an instance of the type,in rust you can specify that a particular code be run whenever a value goes out of scope, hence you don’t need to be careful about placing cleanup code everywhere.
+You specify the code to be run when implementing the drop trait.The drop trait requires you to implement a method called drop that takes in a mutable reference to self,
+The Drop trait is included in the prelude, so no need to bring into scope,
+Variables are dropped in reverse order of their creation, so d is dropped before c (check functionality in code)
+
+Dropping a Value Early with std::mem::drop
+It is not straightforward to disable the drop trait as that goes against the reason for its existence	.
+However you might need to clean up a value early, in the.e when using smart pointers that manages locks, you might want to force the drop method so that the other code can access the lock, rust doesn’t let you can drop manually, instead you can call std::mem::drop function.
+drop method from the drop trait id a destructor, -a function that cleans up an instance, opposite of constructor - a function that creates an instance.you can’t called the drop method from the trait directly, if you want to drop a value before end of its scope,this is because rust would still call the drop at the end of values scope causing a double free error. 
+Drop from std::men::drop is in the prelude already so we can do i.e:
+
+fn main(){let c= customStruct{name:String::from(“Louis”);
+}
+drop(c)
+}
+If you had a drop impl of the Drop trait, whatever is specified in there will be run once drop is called,
+You could use the code in the body of drop to make cleanup safe and convinient. I.e you could use it to create your own memory allocator.
+
+Rc<T>, the Reference Counted Smart Pointer
