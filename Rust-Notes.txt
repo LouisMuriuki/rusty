@@ -1651,3 +1651,53 @@ If you had a drop impl of the Drop trait, whatever is specified in there will be
 You could use the code in the body of drop to make cleanup safe and convinient. I.e you could use it to create your own memory allocator.
 
 Rc<T>, the Reference Counted Smart Pointer
+
+In majority of the cases, ownership is clear, we know what what value is owned by what variable,
+However there are cases where the value might have multiple owners, I.e in graph data structures, multiple edges might point to the same node.
+This means that the node is owned by all the edges pointing to it.To enable multiple ownership explicitly we have to use Rust type Rc<T> which means reference counting.
+It keeps track of the number of references to a value to determine if it is in use or not.if the reference count is zero then the value is okay to be cleaned 
+We use Rc<T> when we want to allocate some data on the heap for our program but we can’t determine at compile time which part will finish using the data last.
+Note: RC<T> is only for use in single threaded scenarios, we will discuss how to handle reference counting in multithreaded scenarios,
+
+Using Rc<T> to Share Data
+Must be included in prelude,I.e use std::rc:Rc
+
+I.e assume we want to use the Cons List such that we create two lists that both share ownership of a third list. Typically you’d this of doing it this way:
+enum List {
+    Cons(i32, Box<List>),
+    Nil,
+}
+
+use crate::List::{Cons, Nil};
+
+fn main() {
+    let a = Cons(5, Box::new(Cons(10, Box::new(Nil))));
+    let b = Cons(3, Box::new(a));
+    let c = Cons(4, Box::new(a));
+}
+
+But this won’t work since a has already given ownership to b and can’t give it to c at the same time (Value used here after move)
+We could decide to change the definition to use references, and this will take you down the lifetimes rabbit hole to ensure every element in the list lives as long as the entire list.this may not work for some scenarios.
+Instead we can change our definition of Box<T> to Rc<T>
+Now when we create b, we clone the Rc<List> that a is holding thereby increasing the number of references from one to two and letting a and b share ownership of the data in that Rc<List>
+We will also clone a when creating c, this will increase our references from 2 to 3
+
+enum List {Cons(i32,Rc<List>),
+Nil
+}
+
+use crate::List::{Cons, Nil};
+use std::rc::Rc;
+
+Fn main(){let a=Rc::new(Cons(5,Rc::new(10,Rc::new(Nil))));
+Let b =Cons(3,Rc::clone(&a));
+Let c=Cons(4,Rc::clone(&a));
+
+We can use a.clone() as well but this will make a deep copy of the data which takes time,The implementation of the Rc::clone(&a) increments the rc counter and does not do a deep clone making it the perfect candidate to use in such scenarios.
+Cloning an Rc<T> Increases the Reference Count
+
+Let’s see how the references counter changes when a value goes out of scope.
+We will include an inner scope around c
+Check example in GitHub.whenever a value goes out of scope the Rc will automagically reduce the counter.Rc allows you to share data between different parts of your program for reading only(immutably)If we could share data mutably then this would break the borrowing rules in chapter 4:Multiple mutable borrows to the same place can cause data races and inconsistencies. 
+
+ 
