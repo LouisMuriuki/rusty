@@ -1,4 +1,4 @@
-workspace = { members = ["Iterators"] }
+# workspace = { members = ["Iterators"] }
 [package]
 name = "closures"
 version = "0.1.0"

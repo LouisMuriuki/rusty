@@ -1,65 +1,17 @@
-#[derive(Debug, PartialEq, Copy, Clone)]
-enum ShirtColor {
-    Red,
-    Blue,
-}
+pub mod move_to_thread;
+pub mod inventory;
+pub mod return_closure;
 
-struct Inventory {
-    shirts: Vec<ShirtColor>,
-}
+use crate::inventory::inventory_main;
+use crate::move_to_thread::move_to_thread;
+use crate::return_closure::return_closure;
 
-impl Inventory {
-    fn giveaway(&self, user_preference: Option<ShirtColor>) -> ShirtColor {
-        user_preference.unwrap_or_else(|| self.most_stocked())
-    }
 
-    fn most_stocked(&self) -> ShirtColor {
-        let mut num_red = 0;
-        let mut num_blue = 0;
 
-        for color in &self.shirts {
-            match color {
-                ShirtColor::Red => num_red += 1,
-                ShirtColor::Blue => num_blue += 1,
-            }
-        }
-        if num_red > num_blue {
-            ShirtColor::Red
-        } else {
-            ShirtColor::Blue
-        }
-    }
-}
 
-fn inventory_main() {
-    let store = Inventory {
-        shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
-    };
-
-    let user_pref1 = Some(ShirtColor::Red);
-    let giveaway1 = store.giveaway(user_pref1);
-    println!(
-        "The user with preference {:?} gets {:?}",
-        user_pref1, giveaway1
-    );
-
-    let user_pref2 = None;
-    let giveaway2 = store.giveaway(user_pref2);
-    println!(
-        "The user with preference {:?} gets {:?}",
-        user_pref2, giveaway2
-    );
-}
-
-fn test_closures() {
-    let example_closure = |x| x;
-    let louis = "Louis";
-    let output = example_closure(String::from(louis));
-
-    println!("{:?}", output)
-}
 
 fn main() {
+    move_to_thread();
     // inventory_main()
-    test_closures()
+    // test_closures()
 }
