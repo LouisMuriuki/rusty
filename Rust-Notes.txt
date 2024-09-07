@@ -1438,7 +1438,7 @@ Depending on an External Package in a Workspace
 
 Notice that the project has only one cargo.lock file at the top level, this ensures that all crates use the same version of dependencies,
 
-Lets add the rand crate to the add_one/crgo.toml in the dependencies section 
+Lets add the rand crate to the add_one/cargo.toml in the dependencies section 
 
 [dependencies]
 rand=“0.8.5”
