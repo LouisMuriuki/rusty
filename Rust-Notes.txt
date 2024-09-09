@@ -818,7 +818,7 @@ One thing though, we can have a method that will only work with instance of the 
 Generics don’t relly affect the runtime speeds of your code due to monomorphization of the code.this is the process of turning generic types to concrete types that are used when compiled
 
 Traits: Defining Shared Behavior
-A trait defines functionality a particular type has and can share with other types,A way of grouping types together by the methods we call on them*Types behaviour consists of the methods we can call on that type.
+A trait defines functionality a particular type has and can share with other types,A way of grouping types together by the methods we call on them- Types behaviour consists of the methods we call on that typeTypes behaviour consists of the methods we can call on that type.
 Different types share the same behaviour if we call the same methods on all of those types.trait definitions are a way to group method signatures together to define a set of behaviours necessary to accomplish some purpose.
  Trait example 
 
@@ -880,7 +880,14 @@ Pub fn Notify<T:Summary>(item1:&T,item2:&T){
 }Specifying Multiple Trait Bounds with the + Syntax
 Say we wanted notify to use display formatting as well as summarise on Item.we can specify this with  +syntax:
 pub fn notify(item: &(impl Summary + Display)) {}
-we can also use the +syntax with trait bound as such:pub fn notify<T:Display+Summary>(item:&T){}Clearer Trait Bounds with where Clauses
+we can also use the +syntax with trait bound as such:pub fn notify<T:Display+Summary>(item:&T){}
+	
+Traits as parameter of a function
+
+The args parameter requires a value that implements the iterator trait and returns string values
+pub fn build(
+        mut args: impl Iterator<Item = String>,
+    )Clearer Trait Bounds with where Clauses
 Using too many traits has a downside,Each generic has its own trait bound , so function with multiple generic parameters can contain lots of trait bounds information between  the functions name and its parameter list making function hard to read.
 Rust provides a syntax we can specify trait bounds inside a  where clause after the functions signature. So instead of writing
 fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {
@@ -1438,7 +1445,7 @@ Depending on an External Package in a Workspace
 
 Notice that the project has only one cargo.lock file at the top level, this ensures that all crates use the same version of dependencies,
 
-Lets add the rand crate to the add_one/cargo.toml in the dependencies section 
+Lets add the rand crate to the add_one/crgo.toml in the dependencies section 
 
 [dependencies]
 rand=“0.8.5”
@@ -1640,7 +1647,7 @@ Variables are dropped in reverse order of their creation, so d is dropped before
 Dropping a Value Early with std::mem::drop
 It is not straightforward to disable the drop trait as that goes against the reason for its existence	.
 However you might need to clean up a value early, in the.e when using smart pointers that manages locks, you might want to force the drop method so that the other code can access the lock, rust doesn’t let you can drop manually, instead you can call std::mem::drop function.
-drop method from the drop trait id a destructor, -a function that cleans up an instance, opposite of constructor - a function that creates an instance.you can’t called the drop method from the trait directly, if you want to drop a value before end of its scope,this is because rust would still call the drop at the end of values scope causing a double free error. 
+drop method from the drop trait is a destructor, -a function that cleans up an instance, opposite of constructor - a function that creates an instance.you can’t called the drop method from the trait directly, if you want to drop a value before end of its scope,this is because rust would still call the drop at the end of values scope causing a double free error. 
 Drop from std::men::drop is in the prelude already so we can do i.e:
 
 fn main(){let c= customStruct{name:String::from(“Louis”);
@@ -1700,4 +1707,184 @@ Let’s see how the references counter changes when a value goes out of scope.
 We will include an inner scope around c
 Check example in GitHub.whenever a value goes out of scope the Rc will automagically reduce the counter.Rc allows you to share data between different parts of your program for reading only(immutably)If we could share data mutably then this would break the borrowing rules in chapter 4:Multiple mutable borrows to the same place can cause data races and inconsistencies. 
 
- 
+RefCell<T> and the Interior Mutability Pattern
+
+Interior mutability is a design pattern in rust that allows you to mutate data even when there are immutable references to that data- this is normally not allowed due to borrowing rules.to mutate data, the unsafe code pattern us usedunsafe code means we are checking the rules manually instead of relying on the compiler to check the rules.
+Unsafe code in then wrapped in a safe API and the outer type is still immutable,
+
+Enforcing Borrowing Rules at Runtime with RefCell<T>
+Unlike Rc<T>, the RefCell<T> represents single ownership over the data it holds.
+With other types borrowing rules invariants are enforced at runtime while with RefCell<T>, if you break these rules, the program panics and exists.
+Compile time error checking has a few advantages I.e:1. Error will be caught sooner,
+2.No runtime analysis performance overhead
+Runtime error checking has some advantages as well1.Certain memory safe computations are allowed and would have been disallowed in compile time.
+Static analysis, like the rust compiler, is inherently conservative - some properties of code are impossible to detect by just analysing the code, I.e the Halting Problem.(research this)
+
+If the rust compiler can’t be sure the code compiles with ownership rules, it might reject a correct program- conservative.
+If the compiler accepts incorrect program, that would be catastrophic, but if the compiler rejects correct code the developer will be inconvenienced.RefCell<T> is useful when sure your code follows borrowing rules but the compiler is unable to understand and guarantee that.
+Similar to Rc<T> , RefCell<T> is only for use in single threaded scenarios.
+* Rc<T> enables multiple owners of the same data; Box<T> and RefCell<T> have single owners.
+* Box<T> allows immutable or mutable borrows checked at compile time; Rc<T> allows only immutable borrows checked at compile time; RefCell<T> allows immutable or mutable borrows checked at runtime.
+* Because RefCell<T> allows mutable borrows checked at runtime, you can mutate the value inside the RefCell<T> even when the RefCell<T> is immutable.
+  Mutating a value inside an immutable value in interior mutability pattern
+
+Interior Mutability: A Mutable Borrow to an Immutable Value
+Let x=5;
+Let y =&mut xAbove code is not valid rust code since we are borrowing  an immutable value mutably.
+However there are scenarios where it would be useful for a value to mutate itself in its methods only  but appear immutable to other code.	using RefCell<T> is one way to have interior mutability but it does not get around borrowing rules completely, the borrow checker at compile time allows this interior mutability, the borrowing rules are checked at runtime. Incase of a violation then you get a panic.A Use Case for Interior Mutability: Mock Objects
+
+
+
+Reference Cycles Can Leak Memory
+Memory leak- creating memory that is never cleaned.memory leaks can happens in rust though at minimal. If we use RC<T> or RefCell<T> it’s possible for the leaks to appear, this is because it’s possible to Crete defences where items refer to each other in a cycle.This can cause the reference counter never to reach 0 during dropping.
+
+
+Fearless Concurrency
+Concurrent programming- is where different parts of the program execute independently 
+Parallel programming - is where different parts of the program execute at the same time.
+
+Rust ownership rules play a major role in preventing concurrency/parrallesism errors and help catch this error in compile time rather than runtime.(Fearless concurrency)
+
+Using Threads to Run Code Simultaneously
+
+Threads enable us to break our code and run it some parts of it independently in threads resulting in massive performance gains, but again introduces complexity
+There is no guarantee of the order in which parts of your code in different threads will run.
+This can result to :1.race conditions- threads accessing resources in an inconsistent order.
+2.dealocks - where two threads are waiting for each other preventing each thread from continuing
+3. Bugs that happen in certain situations and are hard to reproduce.
+
+Rust std uses 1:1 model for thread implementation, where by a program uses one operating system thread per one language thread.
+
+Creating a New Thread with spawn
+
+We use thread::spawn to spawn a ew thread, and pass a closure to it to run  code on a new thread.
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    thread::spawn(|| {
+        for i in 1..10 {
+            println!("hi number {i} from the spawned thread!");
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("hi number {i} from the main thread!");
+        thread::sleep(Duration::from_millis(1));
+    }
+}
+
+When the main thread completes all other threads are shut down, whether complete or not.
+
+Waiting for All Threads to Finish Using join Handles
+
+There is no guarantee that the spawned thread will get to run and also the spawned thread can be terminated at nay time.
+To fix that we use the JoinHandle which is a type from thread::spawn	
+joinHandles are owned value, where when we call the join method on, waiting until the thread finishes before exiting
+
+Let multi=thread::spawn(||{
+For I in 1..9{println!(“Thread {:?}”,I);
+}
+})
+Multi.join().unwrap();
+
+Calling join on multi blocks the thread currently running until the thread at the multi terminates,Blocking a thread means that thread is prevented from performing work or exiting
+
+
+Using move Closures with Threads
+
+Move keyword is mostly used when passing ownership of a value to the closure from its environment , especially when using thread::spawn()
+When passing a value to a closure in a new thread it is key that you move it inside the closure because rust does not know how long the thread will run and how long the reference will be valid, before some external factor leads to its deallocation, which might leads to bugs, inconsistencies or even panics.
+
+
+Using Message Passing to Transfer Data Between Threads
+One approach to safe concurrency is message passing. This is where threads or actors communicate by sending each other messages containing data,
+To facilitate this rust std has an implementation of channels.Channels facilitate the sending of messages from one three to another.it has :
+1.Transmitter-
+2.Receiver-one part of your code calls methods on the transmitter with the data you want to send, and another part checks the receiving end for arriving messages.
+A channel is said to be dropped if either the transmitter or receiver is dropped.to cretae a channel we use the MPSC from the std lib
+
+MPSC=Mutliple Producer Single Consumera channel can have multiple ends producing values but will only have one receiving end that consumes the values.	
+
+The transmitter has a method send which ids of type Result<T,E> to return an error incase the value being passed is somehow dropped or invalid.
+
+The receiver as well has methods that are of type Result<T,E>the receiver has two methods:1-recv  blocks the thread currently running  until a value is sent down the channel
+2.try_recv- this does not block the thread but returns the Result <T,E> immediately, an Ok holding the message value and an error if there aren’t any messages at that time.
+Using try_recv is useful if the thread has other work to do while waiting for the messages.
+
+We could write a loop that calls try_recv every so often to check for the message otherwise continue with other work before checking again for the value.
+
+
+Channels and Ownership Transference
+
+Ownership rules are vital for us to write safe and concurrent rust code.
+pub fn spawned_to_main(){
+    let (tx ,rx)=mpsc::channel();
+
+
+    thread::spawn(move|| {
+        let val = String::from("hi");
+        tx.send(val).unwrap();
+        Println!(“the value of val is {val :?}”.   // this won’t compile as send takes ownership, also the receiver will take ownership after the value is sent.
+    });
+
+    println!("Received: {}", rx.recv().unwrap());
+    }
+
+Sending Multiple Values and Seeing the Receiver Waiting
+
+To show that the threads can communicate in concurrency.
+
+pub fn multi_spawned_to_main() {
+    let (tx, rx) = mpsc::channel();
+
+    thread::spawn(move || {
+        let vecs = vec![
+            String::from("hi"),
+            String::from("thread"),
+            String::from("am"),
+            String::from("Louis")
+        ];
+
+        for vec in vecs {
+            tx.send(vec.clone()).unwrap();
+            thread::sleep(Duration::from_secs(2));
+            if vec == "Louis" {
+                print!("Exiting the thread");
+                exit(1);
+            }
+        }
+    });
+
+    for received in rx {
+        println!("Received: {}", received);
+    }
+}
+
+
+Creating Multiple Producers by Cloning the Transmitter
+
+To create multiple transmitters we call clone on the tx
+
+Let (tx, rx ) misc::channel()
+Let tx1= tx.clone();
+
+// now we can call this separately on another thread to send messages to the receiver in concurrency.
+
+
+
+Shared-State Concurrency
+
+	
+
+
+
+
+
+
+
+Small notes.
+- Inorder for a closure to take ownership of the value we should use the move keyword, otherwise it will borrow mutably or immutably depending on how you have used it.
+-Indexing operation will always borrow.
+-rust will never automatically create deep copies as that results to increased runtime performance. (Making deeps copies on the heap is much slower than making copies on the stack)
