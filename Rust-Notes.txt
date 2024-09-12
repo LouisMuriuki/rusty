@@ -1875,8 +1875,84 @@ Let tx1= tx.clone();
 
 
 Shared-State Concurrency
+We can pass messages concurrently to other threads using channels but that is not the only way, threads can access shared state data as well.this means that data will have multiple ownership unlike in channels where data is owned by on person(sender or receiver).this adds complexity, just as we saw this concept using smart-pointers(RC<T>), but rusts ownership	system can be beneficial in such scenarios.
 
-	
+Using Mutexes to Allow Access to Data from One Thread at a Time
+
+Mutex- abbreviation for mutual exclusion, allows only one thread to access data at a given time.A thread must first signal that it wants access to the mutex by acquiring a mutex lockthe lock is a data structure in the mutex that keeps track of who has exclusive access to the data.
+Mutex has a reputation to be hard to use, this is because of these two rules
+1. You must attempt to acquire the lock before using the data.
+2. When you are done with the data that the mutex guards, you must unlock the data so other threads can acquire the lock.
+
+The API of Mutex<T>
+
+Using Mutex in single-threaded situations
+use std::sync::Mutex;
+
+fn main() {
+    let m = Mutex::new(5);  // new Mutex
+
+    {
+        let mut num = m.lock().unwrap();    //acuire the lock first
+        *num = 6;      // mutate/ use the data from mutex.
+    }
+
+    println!("m = {m:?}");  // m is 6
+}
+
+Mutex<T> is a smart pointer, the call to lock returns, a smart pointer called MutexGuard, locked in LockResult, that we handled with the call to unwrap.
+The smart pointer implements both Deref and Drop, this is seen above since we are able to change the value using * and also the when the inner function goes out of scope, drop is executed.
+
+
+Sharing a Mutex<T> Between Multiple Threads
+
+use std::sync::Mutex;
+use std::thread;
+
+fn main() {
+    let counter = Mutex::new(0);
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    println!("Result: {}", *counter.lock().unwrap());
+}
+This will not compile as we cannot moved ownership of counter into multiple threads.
+We could try giving the value multiple owners by using RC<T>, we wrap the mutex inside RC as shown RC::new(Mutex::new(0)), but if we try that (check the book example) the compiler complains about  RC<Mutex<i32>> not being sent to threads safely. And goes further to tell us the reason, because Trait send is not implemented for RC<Mutex<i32>>Unfortunately Rc is not safe to share across threads, and cn lead to unexpected bugs and memory leaks,The issue with RC is it does not have any concurrency primitive to make sure that changes to the counter cannot be interrupted by another thread.
+
+
+Atomic Reference Counting with Arc<T>
+Fortunately, we have ARC<T> which is a type of RC that is safe to use in concurrent situations
+Check out std::sync::atomic for more info.they work like primitive type but are safe to share across threads.
+
+Why are primitives not atomic? This is because thread safety come s with a performance penalty that you only need to pay when you really need to.
+Your single threaded application will run faster without atomics.
+
+
+Mutex can help divide our code operation to different  parts, each handled by different threads where each  can then update the final result with its part.	
+The std::sync::atomic provides much simpler types for you to handle in different operations, please check that out.
+
+
+Similarities Between RefCell<T>/Rc<T> and Mutex<T>/Arc<T>
+
+
+As noticed in the example above counter is immutable but we could get a mutable reference	 to it.This means that Mutex<T> provides interior mutability same as CellRefCell<T> gives interior mutability access to RC<T> while use Mutex<T> to mutate the contents inside Arc<T>
+
+Just like RC<T> which comes with the risk of creating reference cycles mutex also come with the risk of creating deadlock when not used correctly.
+This occurs when an operation needs to lock two resources and two threads have acquired one of the locks, causing them to wait for each other forever.if you are interested in deadlocks, try creating a rust program that has a deadlock, then research on deadlock mitigation strategies for muteness in any language, then try implementing in rust. The std lib API doc for Mutex and MutexGuard offers useful information.
+
+Extensible Concurrency with the Sync and Send Traits
 
 
 
