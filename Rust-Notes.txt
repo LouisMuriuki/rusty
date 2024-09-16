@@ -1954,8 +1954,70 @@ This occurs when an operation needs to lock two resources and two threads have a
 
 Extensible Concurrency with the Sync and Send Traits
 
+The rust language has very few concurrency features, all the we have seen comes from the std lib, not the language itself.
+However two concurrent trait are embedded into the language, the std::marker traits  Sync and Send.
 
 
+Allowing Transference of Ownership Between Threads with Send
+
+The send marker trait indicates that ownership of values of the type that implement the Send trait can be transferred  between threads.
+Almost every rust type implements Send, but there are some exceptions	including RC<T>, this cannot be Send because if you cloned an RC<T> value and triggered a transfer ownership of the clone thread, both threads might update the reference count at the same time.Thus for this reason , RC<T> is used for single threaded situations and rust will prevent us from sending Rc<T> across threads.
+Almost all primitives in rust implement send trait except raw pointers which we will see in in chapter 19.
+
+
+Allowing Access from Multiple Threads with Sync
+The sync marker trait indicates that it is safe for the type implementing Sync to be referenced across threads
+I.e Any type T is Sync if &T (any immutable reference to T) is Send, meaning the reference can be sent safely to other threads.
+Primitives as sync similar to send above.Any type composed of types that are Sync are also Sync.
+Rc<T> is not Sync for the same reason it is not Send.
+The RefCell<T> and the entire Cell family are not sync as wellthe implementation of borrow checking that  RefCell<T>  does at runtime is not thread safe.The smart pointer Mutex is Sync and can share access with multiple  threads.
+
+Implementing Send and Sync Manually Is Unsafe
+
+Because types made up of Send and Sync traits are automatically also Send and Sync , we don’t have to implement those traits manually.as marker traits, they don’t even have any method to implement, they are just useful for enforcing invariants related to concurrency.
+Manually implementing these traits involves implementing unsafe Rust code.
+Building new concurrency types that don’t implement Send and Sync requires careful thought to uphold the safety guarantee.
+
+Since rust lang itself doesn’t have many concurrency features inbuilt, a lot of concurrency is implemented in crates.be sure to check them out(evolves more quickly)
+
+Object-Oriented Programming Features of Rust
+
+Intro
+Is away of modelling programs, through which objects pass message to each other
+
+Characteristics of Object-Oriented Languages
+
+Oop languages often come with many characteristics namely:1.Encapsulation
+2. Objects
+3. Inheritance.
+
+Objects Contain Data and Behavior
+In the book Design patterns: Elements of Re-usable Object-oriented software, OOP is defined as :
+Object-oriented programs are made up of objects. An object packages both data and the procedures that operate on that data. The procedures are typically called methods or operations using this statement rust is an OOP language because structs and enums hold data and their impl blocks provide a way to operate on that data through methods or  associated functions etc.
+
+Encapsulation that Hides Implementation Details
+
+Encapsulation- Implementation details of an objects aren’t accessible to code using that object.therefore the only way to interact with an object is through its public API.code using the data should not be able to alter the internals of that object.
+In rust we can use the pub keyword to allow other part of our code to access certain data structures e.g structs and enums.
+This shows that rust is truly object oriented.i.e you can make a struct definition public using pub key word, but fails to make the values inside the structure pub, you can be able to consume your structure in other files but you cannot alter the values unless in that same specific file with the struct and method to alter the values
+
+Inheritance as a Type System and as Code Sharing
+Inheritance is a mechanism where an object can inherit elements from another objects definition, thus gaining the parent objects data and behaviour without you having to define them again.
+Rust does not have inheritance.
+There is no way to define a struct that inherits the the parents structure fields and method implementation without using a macro.
+There are however tools that can help you achieve inheritance if you	are used to having such in your programming toolbox.
+
+You would choose inheritance for two reasons
+    1. REUSE OF CODE- You can implement a behaviour for one type and inheritance enables you to reuse that implementation for a different type.
+You can do this in a limited way in  rust using default  trait method implementation.
+We can also override the default impl, which is similar to the child class overriding the implementation of a method inherited from a parent class.
+ 	2. POLYMOPHISM-enable a child type to be used in the same  place as parent type.
+Generally polymorphism is code that can work with data of multiple types.	
+In rust uses generics instead to abstract over different possible types and traits bounds to impose  constraints on what those types must provide(bounded parametric polymorphism)
+
+Inheritance has recently fallen out of favour as a programming design solution in most languages as it leads to sharing more code than necessary
+
+Using Trait Objects That Allow for Values of Different Types
 
 
 
